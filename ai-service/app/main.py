@@ -12,7 +12,7 @@ from .mapping import field_mapper
 from .reconcile import engine
 from .anomaly import detector
 from .rootcause import explainer
-from .chat import copilot
+from .chat import copilot, bnp
 
 app = FastAPI(title="OneRecon AI/Data Service", version="1.0.0")
 
@@ -268,6 +268,16 @@ def anomaly_scan_payload(req: AnomalyScanRequest):
 @app.post("/ai/chat")
 def chat_payload(req: ChatRequest):
     return copilot.answer(req.workflowId, req.question, break_id=req.breakId)
+
+
+class BNPChatRequest(BaseModel):
+    question: str = ""
+
+
+@app.post("/ai/bnp-chat")
+def bnp_chat_payload(req: BNPChatRequest):
+    """General questions about BNP Paribas, grounded in bnp_paribas_knowledge_base.txt (Groq RAG)."""
+    return bnp.answer(req.question)
 
 
 class PredictRequest(BaseModel):

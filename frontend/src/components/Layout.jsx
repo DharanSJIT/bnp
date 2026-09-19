@@ -5,6 +5,7 @@ import { clsx } from '../lib/format';
 import { useAuth, ROLE_LABEL } from '../store/useAuth';
 import { useWorkflow } from '../store/useWorkflow';
 import { RoleBadge, Skeleton } from './ui.jsx';
+import BnpChat from './BnpChat.jsx';
 import { useToast } from '../store/useToast';
 
 const BASE_NAV = [
@@ -194,6 +195,7 @@ export default function Layout() {
           </AnimatePresence>
         </main>
       </div>
+      <BnpChat />
     </div>
   );
 }

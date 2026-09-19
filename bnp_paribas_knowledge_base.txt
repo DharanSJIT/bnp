@@ -1,0 +1,1297 @@
+BNP PARIBAS GROUP — KNOWLEDGE BASE
+Comprehensive factual knowledge extracted and structured from the official BNP Paribas Group website
+Primary source: https://group.bnpparibas/en/
+Knowledge-base purpose: RAG / chatbot question answering
+
+IMPORTANT:
+- This document describes BNP Paribas Group information available on official BNP Paribas Group webpages consulted in September 2026.
+- Financial figures and other metrics are time-dependent. The date of each figure is stated where known.
+- For current news, prices, job openings, financial results, or other changing information, the official BNP Paribas website should be checked for the latest update.
+- This file is intentionally written in explicit, machine-readable-friendly language with synonyms and question-answer patterns to improve retrieval.
+
+============================================================
+1. BNP PARIBAS — GENERAL OVERVIEW
+============================================================
+
+BNP Paribas is a European leader in banking and financial services with a global footprint. The BNP Paribas Group operates in 64 countries and territories and has more than 180,000 employees.
+
+BNP Paribas describes itself as "the bank for a changing world."
+
+The Group's company purpose is:
+"WE ARE AT THE SERVICE OF OUR CLIENTS AND THE WORLD WE LIVE IN."
+
+BNP Paribas supports a broad range of customers:
+- Individual customers
+- Professionals
+- Entrepreneurs
+- Small and medium-sized enterprises (SMEs)
+- Large corporate clients
+- Institutional investors
+- Banks
+- Insurance companies
+- Asset managers
+- Associations
+- NGOs
+- Governments and public-sector-related organisations
+
+BNP Paribas provides solutions covering:
+- Banking
+- Financing
+- Payments
+- Cash management
+- Savings
+- Investment
+- Asset management
+- Insurance
+- Wealth management
+- Real estate services
+- Equipment leasing
+- Consumer finance
+- Mobility solutions
+- Capital markets
+- Securities services
+- Corporate finance
+- Financial advisory
+- Risk management
+
+The Group's model is diversified and integrated. Its business lines cooperate with each other so that clients can access multiple financial and non-financial capabilities through the same Group.
+
+Official source:
+https://group.bnpparibas/en/
+
+============================================================
+2. KEY GROUP FACTS
+============================================================
+
+As of 31 December 2025:
+- Revenue: EUR 52.2 billion
+- Net income, Group share: EUR 12.2 billion
+- CET1 ratio: 12.6%
+- Employees: more than 180,000
+- Countries and territories: 64
+
+Employee distribution as of 31 December 2025:
+- Europe: 146,139 employees
+- Asia-Pacific: 20,831 employees
+- Africa: 5,186 employees
+- North America: 5,136 employees
+- South America: 3,245 employees
+- Middle East: 458 employees
+
+The Group has a historic footprint in four eurozone markets:
+- France
+- Italy
+- Belgium
+- Luxembourg
+
+It also has leading platforms and business lines in Europe, a strong presence in the Americas, and a solid and growing business in Asia-Pacific.
+
+Source:
+https://group.bnpparibas/en/group
+
+============================================================
+3. HISTORY OF BNP PARIBAS
+============================================================
+
+BNP Paribas was officially established on 23 May 2000 through the merger of:
+- BNP, France's leading deposit bank
+- Paribas, an international investment bank
+
+The Group's history goes back approximately two centuries. The banks that form the BNP Paribas heritage have been involved in European and international economic and financial development for more than 200 years.
+
+The BNP Paribas historical identity has been shaped by:
+- Banking
+- Financing economic development
+- International expansion
+- Mergers and transformations
+- Adaptation to economic and social change
+
+Important date:
+23 May 2000 = official creation of BNP Paribas.
+
+Source:
+https://group.bnpparibas/en/group/about-us/company-history
+
+============================================================
+4. COMPANY PURPOSE
+============================================================
+
+BNP Paribas' company purpose is:
+"We are at the service of our clients and the world we live in."
+
+The Group states that its mission is to contribute to a responsible and sustainable economy by financing and advising clients according to high ethical standards.
+
+BNP Paribas aims to:
+- Provide secure financial solutions
+- Provide sound financial solutions
+- Provide innovative financial solutions
+- Support customers over the long term
+- Finance projects
+- Manage investments and savings
+- Provide insurance protection
+- Address environmental challenges
+- Support local development
+- Promote social inclusion
+- Integrate ethics and responsibility into business operations
+
+The company purpose is connected with:
+- Shared convictions
+- Code of Conduct
+- Engagement Manifesto
+- Sustainable finance
+- Environmental responsibility
+- Social responsibility
+- Civic responsibility
+
+Source:
+https://group.bnpparibas/en/group/about-us/company-purpose
+
+============================================================
+5. ORGANISATIONAL STRUCTURE
+============================================================
+
+BNP Paribas organises its activities around THREE operating divisions:
+
+1. Corporate & Institutional Banking (CIB)
+2. Commercial, Personal Banking & Services (CPBS)
+3. Investment & Protection Services (IPS)
+
+These divisions cooperate to provide customers with a broad range of services.
+
+The integrated model allows BNP Paribas to combine:
+- Retail banking
+- Corporate banking
+- Investment banking
+- Asset management
+- Insurance
+- Consumer finance
+- Real estate
+- Leasing
+- Mobility
+- Capital markets
+- Securities services
+
+Source:
+https://group.bnpparibas/en/group/our-businesses-and-expertise
+
+============================================================
+6. CORPORATE & INSTITUTIONAL BANKING — CIB
+============================================================
+
+Corporate & Institutional Banking (CIB) serves:
+- Corporate clients
+- Institutional investors
+
+Institutional investors include:
+- Banks
+- Insurance companies
+- Asset managers
+- Other institutional investment organisations
+
+CIB provides:
+- Capital markets solutions
+- Securities services
+- Investment banking
+- Financing
+- Risk management
+- Cash management
+- Financial advisory
+- Corporate banking
+- Market solutions
+- Hedging
+- Financing
+- Market intelligence
+
+CIB operates across three main areas:
+
+A. Global Banking
+B. Global Markets
+C. Securities Services
+
+GLOBAL BANKING:
+Global Banking provides corporate clients with:
+- Strategic advice
+- Financing access
+- Transaction banking
+- Cash management
+- Financial advisory
+- Corporate banking services
+
+GLOBAL MARKETS:
+Global Markets focuses on:
+- Capital-markets investment
+- Capital-markets financing
+- Hedging
+- Financing
+- Market intelligence
+- Multiple asset classes
+- Institutional and corporate clients
+
+SECURITIES SERVICES:
+Securities Services provides:
+- Securities custody
+- Securities administration
+- Clearing-related services
+- Transaction processing
+- Asset servicing
+- Operational support for investment activities
+
+CIB's purpose includes connecting:
+- Financing needs of corporate clients
+with
+- Investment opportunities sought by institutional investors
+
+CIB operates in:
+- Europe, Middle East and Africa (EMEA)
+- Americas
+- Asia-Pacific (APAC)
+
+CIB figures as of 31 December 2025:
+- 52 countries
+- More than 40,000 employees
+- More than 19,000 corporate and institutional clients
+
+Source:
+https://group.bnpparibas/en/group/our-businesses-and-expertise/corporate-institutional-banking
+
+============================================================
+7. COMMERCIAL, PERSONAL BANKING & SERVICES — CPBS
+============================================================
+
+Commercial, Personal Banking & Services (CPBS) combines:
+- Commercial banking networks
+- Specialised businesses
+
+CPBS serves:
+- Individuals
+- Professionals
+- Entrepreneurs
+- Companies
+- Corporate customers
+
+CPBS focuses on:
+- Daily banking needs
+- Financing
+- Savings
+- Digital banking
+- Mobility
+- Leasing
+- Consumer finance
+- Personal finance
+
+Commercial banking networks include:
+- France
+- Belgium
+- Italy
+- Luxembourg
+- Europe-Mediterranean activities
+
+CPBS also includes specialised businesses such as:
+- Arval
+- BNP Paribas Leasing Solutions
+- BNP Paribas Personal Finance
+- BNP Paribas Personal Investors
+- Nickel
+
+CPBS figures as of 31 December 2025:
+- 44 countries
+- 93,153 employees
+- Approximately 60 million individual, professional, entrepreneur and corporate customers
+
+CPBS works with IPS to provide:
+- Savings
+- Investment
+- Insurance
+- Digital customer journeys
+- Responsible investment products
+
+CPBS works with CIB to support companies through:
+- Green financing
+- Mergers and acquisitions
+- International development
+- Access to international markets
+- Foreign-exchange capabilities
+
+Source:
+https://group.bnpparibas/en/group/our-businesses-and-expertise/commercial-personal-banking-services
+
+============================================================
+8. CPBS COMMERCIAL BANKS AND SPECIALISED BUSINESSES
+============================================================
+
+French Commercial Banking:
+- Serves individual and corporate customers in France
+- Provides private banking and corporate banking
+- Operates a large branch and business-centre network
+- Includes digital banking services such as Hello bank!
+
+BNP Paribas Fortis:
+- BNP Paribas' commercial banking presence in Belgium
+- Serves individuals, private banking clients, professionals and companies
+
+BNL BNP Paribas:
+- BNP Paribas' banking business in Italy
+- Offers banking, financial and insurance products and services
+
+BGL BNP Paribas:
+- BNP Paribas' banking business in Luxembourg
+- Serves individuals, professionals, private banking clients, SMEs and large corporates
+
+Europe-Mediterranean:
+Includes banking activities outside the euro zone, including operations in:
+- Türkiye
+- Ukraine
+- Poland
+- Algeria
+- Morocco
+- China
+
+Arval:
+- Mobility business of BNP Paribas
+- Provides vehicle and mobility solutions
+- Supports companies, employees and individuals
+- Focuses on mobility and transition-related solutions
+- Had almost 3 million rental vehicles in 53 countries according to the Group page
+
+BNP Paribas Leasing Solutions:
+- Equipment financing
+- Leasing
+- Financing for professional equipment
+- Works with manufacturers, distributors, companies and banking networks
+
+BNP Paribas Personal Finance:
+- Financing for individual customers
+- Consumer finance and related services
+
+BNP Paribas Personal Investors:
+- Digital banking and investment services
+
+Nickel:
+- Account service designed to be accessible to a broad customer base
+- Part of CPBS
+
+Source:
+https://group.bnpparibas/en/group/our-businesses-and-expertise/commercial-personal-banking-services
+
+============================================================
+9. INVESTMENT & PROTECTION SERVICES — IPS
+============================================================
+
+Investment & Protection Services (IPS) combines four specialised activities:
+
+1. BNP Paribas Cardif
+2. BNP Paribas Asset Management
+3. BNP Paribas Wealth Management
+4. BNP Paribas Real Estate
+
+IPS provides solutions related to:
+- Protection
+- Savings
+- Investment
+- Insurance
+- Wealth management
+- Asset management
+- Retirement savings
+- Real estate
+
+IPS customers include:
+- Individuals
+- Professionals
+- Corporate clients
+- Associations
+- NGOs
+- Governments
+- Institutional investors
+- Family offices
+
+IPS works with CPBS to:
+- Anticipate savings and investment needs
+- Develop new offerings
+- Improve customer experience
+- Provide advice
+
+IPS works with CIB to:
+- Build investment solutions
+- Serve institutional clients
+- Serve large corporates
+- Serve family offices
+- Provide integrated financial products
+
+IPS figures as of 31 December 2025:
+- 46 countries
+- Approximately 21,600 employees
+- EUR 1.6 trillion assets under management
+
+Source:
+https://group.bnpparibas/en/group/our-businesses-and-expertise/investment-protection-services
+
+============================================================
+10. BNP PARIBAS CARDIF
+============================================================
+
+BNP Paribas Cardif is the Group's insurance and protection business.
+
+Its mission includes making insurance more accessible.
+
+Solutions include:
+- Borrowers' insurance
+- Life insurance
+- Savings
+- Employee savings
+- Retirement savings
+- Personal protection
+- Protection against life risks
+
+Borrowers' insurance can protect customers when they take:
+- Mortgage loans
+- Personal loans
+- Auto loans
+- Consumer loans
+
+Source:
+https://group.bnpparibas/en/group/our-businesses-and-expertise/investment-protection-services
+
+============================================================
+11. BNP PARIBAS ASSET MANAGEMENT
+============================================================
+
+BNP Paribas Asset Management provides investment and asset-management capabilities.
+
+Its activities include:
+- Liquid investment strategies
+- Long-term savings instruments
+- Private assets
+- Institutional investment
+- Wealth-related investment solutions
+- Responsible and sustainable investment
+
+The business also supports innovative companies and solutions connected with ecological and energy transition.
+
+Source:
+https://group.bnpparibas/en/group/our-businesses-and-expertise/investment-protection-services
+
+============================================================
+12. BNP PARIBAS WEALTH MANAGEMENT
+============================================================
+
+BNP Paribas Wealth Management is the Group's private banking business.
+
+It serves high-net-worth clients and provides wealth-related services.
+
+Typical areas include:
+- Wealth management
+- Investment
+- Financial planning
+- Private banking
+- Investment solutions
+
+It works with IPS and CIB to provide integrated solutions for wealthy individuals, families, family offices and institutional clients.
+
+Source:
+https://group.bnpparibas/en/group/our-businesses-and-expertise/investment-protection-services
+
+============================================================
+13. BNP PARIBAS REAL ESTATE
+============================================================
+
+BNP Paribas Real Estate provides real-estate services.
+
+Customers include:
+- Institutional investors
+- Companies
+- Local governments
+- Individuals
+
+It supports real-estate projects across stages such as:
+- Planning
+- Design
+- Construction
+- Management
+- Property-related services
+
+The business also focuses on responsible real estate, including energy efficiency, inclusion and social well-being.
+
+Source:
+https://group.bnpparibas/en/group/our-businesses-and-expertise/investment-protection-services
+
+============================================================
+14. BUSINESS MODEL
+============================================================
+
+BNP Paribas' business model is:
+- Diversified
+- Integrated
+- Customer-focused
+- International
+- Technology-enabled
+- Sustainability-oriented
+
+Diversification exists across:
+- Customer segments
+- Geography
+- Sectors
+- Business lines
+
+Integration means that the Group's businesses cooperate rather than operating as completely isolated businesses.
+
+Examples:
+- A corporate client can receive financing from CIB.
+- The same client can use cash management services.
+- The company can access capital markets.
+- Employees or customers can use commercial banking services.
+- Investment needs can be supported by asset management.
+- Insurance needs can be supported by Cardif.
+- Real-estate requirements can be supported by BNP Paribas Real Estate.
+
+Source:
+https://group.bnpparibas/en/group/about-us/business-model
+
+============================================================
+15. STRATEGIC PLAN
+============================================================
+
+BNP Paribas' strategic plan is built around three major pillars:
+
+1. GROWTH
+2. TECHNOLOGY
+3. SUSTAINABILITY
+
+GROWTH:
+- Continue profitable growth
+- Leverage leading European positions
+- Develop market opportunities
+- Gain market share
+- Expand business capabilities
+
+TECHNOLOGY:
+- Improve customer experience
+- Improve employee experience
+- Improve operational efficiency
+- Modernise systems
+- Accelerate digital transformation
+- Use data and artificial intelligence
+
+SUSTAINABILITY:
+- Accelerate sustainable finance
+- Support customers' transition
+- Direct financial flows toward transition
+- Support a low-carbon economy
+- Address environmental and social challenges
+
+The strategic plan also highlights:
+- Technology and industrialisation
+- Sustainable finance and ESG
+- Employee development and engagement
+
+Source:
+https://group.bnpparibas/en/group/about-us/strategic-plan
+
+============================================================
+16. SUSTAINABLE FINANCE AND TRANSITION
+============================================================
+
+BNP Paribas positions sustainable finance as an important part of its strategy.
+
+The Group supports customers in:
+- Climate transition
+- Energy transition
+- Biodiversity protection
+- Social transition
+- Inclusive development
+- Low-carbon economic development
+
+The Group reports that by the end of 2025:
+- EUR 252 billion was mobilised to support clients' transition to a low-carbon economy
+- EUR 38.3 billion was credit exposure for low-carbon energy production at the end of September 2025
+- EUR 6 billion was financing related to protection of terrestrial and marine biodiversity at the end of 2025
+
+BNP Paribas has stated a 2030 target that 90% of its stock of credit exposures for energy production will be dedicated to low-carbon energy.
+
+The Group also works on:
+- Energy efficiency
+- Responsible products
+- Biodiversity
+- Natural capital
+- Just transition
+- Sustainable investment
+- Climate finance
+
+Source:
+https://group.bnpparibas/en/our-commitments/transitions
+https://group.bnpparibas/en/our-commitments
+
+============================================================
+17. INCLUSION
+============================================================
+
+BNP Paribas states that inclusion is an important part of its commitments.
+
+Areas include:
+- Financial inclusion
+- Social inclusion
+- Equal opportunities
+- Diversity
+- Gender equality
+- Disability inclusion
+- Multiculturalism
+- Sexual orientation and gender identity
+- Age and intergenerational relations
+
+Financial and social inclusion initiatives are intended to support people who may be vulnerable or excluded for socioeconomic reasons.
+
+By the end of 2024, BNP Paribas reported:
+- 5 million beneficiaries of products and services supporting financial inclusion
+- EUR 161 million in solidarity investments in funds distributed by BNP Paribas E&RE and managed by BNP Paribas Asset Management
+- 1.3 million jobs created by microfinance institutions benefiting from BNP Paribas support
+
+The Group also reported impact contracts totalling EUR 93 million since 2016.
+
+Source:
+https://group.bnpparibas/en/our-commitments/inclusion
+https://group.bnpparibas/en/our-commitments/inclusion/financial-and-social-inclusion
+
+============================================================
+18. DIVERSITY, EQUALITY AND INCLUSION
+============================================================
+
+BNP Paribas identifies five major areas for diversity and inclusion action:
+1. Professional equality between women and men
+2. Disabilities
+3. Multiculturalism and diverse backgrounds
+4. Sexual orientation and gender identity
+5. Ageism and intergenerational relations
+
+The Group states that inclusion supports innovation, employee loyalty and corporate culture.
+
+A 2024 agreement with UNI Global Union strengthened the Group's common social framework.
+
+A 2023 Conduct & Inclusion survey reported that 87% of Group employees said they could "be themselves" while carrying out their professional responsibilities.
+
+The Group reported that women represented 51% of employees and 40% of managers in the referenced data.
+
+Source:
+https://group.bnpparibas/en/our-commitments/inclusion/diversity-equality-and-inclusion
+
+============================================================
+19. INNOVATION AND TECHNOLOGY
+============================================================
+
+Technology is one of BNP Paribas' strategic pillars.
+
+The Group's innovation strategy focuses on:
+1. Addressing new client needs
+2. Adapting to new uses and competition
+3. Anticipating regulatory changes
+4. Modernising IT systems and data-sharing capabilities
+5. Protecting client data and maintaining security
+
+Technology-related risk areas include:
+- Cyber risk
+- Fraud
+- Data-integrity risk
+- Privacy
+- Security
+- Digital environmental impact
+
+BNP Paribas uses:
+- Digital banking
+- Data analytics
+- Artificial intelligence
+- Generative AI
+- Predictive analytics
+- Automation
+- Fintech partnerships
+- Open innovation
+- Digital customer experiences
+
+Source:
+https://group.bnpparibas/en/our-commitments/innovation
+
+============================================================
+20. ARTIFICIAL INTELLIGENCE AND DATA
+============================================================
+
+BNP Paribas states that artificial intelligence has been used in its tools and processes since 2016.
+
+AI applications include:
+- Understanding customer needs
+- Personalising offers
+- Improving customer experience
+- Automating repetitive tasks
+- Supporting employees
+- Risk detection
+- Fraud detection
+- Cybersecurity
+- Money-laundering risk detection
+- Document analysis
+- Decision support
+- Mortgage-related processing
+- ESG assessment
+
+The Group says that, as of the end of 2023:
+- It had more than 700 data scientists and AI business analysts
+- It had rolled out more than 700 AI use cases
+- It had identified nearly 100 generative AI use cases
+
+BNP Paribas states that responsible AI requires:
+- Data protection
+- Confidentiality
+- Ethical use
+- Security
+- Regulation
+- Risk management
+- Human oversight and control
+
+The Group has also supported AI startups and entered into partnerships with AI companies.
+
+Source:
+https://group.bnpparibas/en/our-commitments/innovation/data-artificial-intelligence
+
+============================================================
+21. RESPONSIBLE AI
+============================================================
+
+BNP Paribas describes responsible AI as AI that is:
+- Useful
+- Responsible
+- Controlled
+- Aligned with customer interests
+- Aligned with employee interests
+- Considerate of societal impact
+
+Important responsible-AI concerns include:
+- Ethics
+- Transparency
+- Security
+- Data protection
+- Societal impact
+- Risk management
+
+Source:
+https://group.bnpparibas/en/news/responsible-ai-at-bnp-paribas-innovating-with-purpose-and-confidence
+
+============================================================
+22. GOVERNANCE
+============================================================
+
+BNP Paribas has several governance bodies.
+
+The Board of Directors:
+- Represents shareholders
+- Examines strategic choices
+- Contributes to good governance
+- Monitors and assesses Group operations
+
+As of May 2026, the Board of Directors consists of 14 directors:
+- 1 director representing employee shareholders
+- 2 directors representing employees
+
+Board terms are three years.
+
+Jean Lemierre became Chairman of the Board of Directors on 12 May 2026.
+
+General Management:
+- Chief Executive Officer (CEO)
+- Two Chief Operating Officers
+- Three Deputy Chief Operating Officers
+
+The Executive Committee includes:
+- General Management
+- Heads of businesses
+- Heads of central functions
+
+The Executive Committee meets at least weekly according to the Group governance page.
+
+Compliance is responsible for helping BNP Paribas comply with:
+- Laws
+- Regulations
+- Regulatory expectations
+- The spirit of laws and regulations
+
+The Group also maintains:
+- Public positions
+- Sector policies
+- Financing policies
+- Investment policies
+
+Source:
+https://group.bnpparibas/en/group/our-governance
+https://group.bnpparibas/en/group/our-governance/board-of-directors
+
+============================================================
+23. ETHICS AND CODE OF CONDUCT
+============================================================
+
+BNP Paribas states that ethical behaviour is central to the Group's activities.
+
+The Code of Conduct provides behavioural principles and rules for:
+- Employees
+- Business lines
+- Decision-making
+- Customer relationships
+- Compliance
+- Responsible business practices
+
+The Group's governance and compliance framework is intended to maintain trust and responsible banking practices.
+
+Source:
+https://group.bnpparibas/en/group
+https://group.bnpparibas/en/group/our-governance
+
+============================================================
+24. CAREERS AT BNP PARIBAS
+============================================================
+
+BNP Paribas offers careers across many professional areas.
+
+Examples include:
+- Sales and client relations
+- IT
+- Technology
+- Data
+- Finance
+- Investment
+- Audit
+- Compliance
+- Risk
+- Legal
+- Consulting
+- Transformation
+- Corporate finance
+- Support functions
+- Operations management
+- Actuarial roles
+
+Career profiles include:
+- Students
+- Early-career professionals
+- Experienced professionals
+
+Employment types shown on the careers website include:
+- Permanent
+- Fixed-term contract
+
+The Group's careers site allows candidates to:
+- Search job offers
+- Explore professions
+- Explore career profiles
+- Prepare applications
+- Learn about recruitment
+
+Source:
+https://group.bnpparibas/en/careers
+
+============================================================
+25. CORPORATE PHILANTHROPY
+============================================================
+
+BNP Paribas has conducted corporate philanthropy activities since 1984.
+
+The Group's main philanthropy areas are:
+1. Solidarity
+2. Environment
+3. Culture
+
+Philanthropic initiatives include:
+- Support for social and humanitarian organisations
+- Support for environmental NGOs
+- Educational programmes
+- Professional integration
+- Support for refugees
+- Scientific research
+- Climate and biodiversity programmes
+- Arts and culture
+- Employee volunteering
+
+In 2024, excluding skills sponsorship in France, BNP Paribas reported philanthropic commitments of:
+- EUR 41.61 million for solidarity
+- EUR 5.27 million for environment
+- EUR 8.01 million for culture
+
+From 2019 to 2023, the Group reported allocating EUR 500 million to philanthropy activities in solidarity, environment and culture.
+
+The BNP Paribas Foundation coordinates international development of the Group's philanthropy activities.
+
+The Group has foundations and endowment funds in multiple countries, including:
+- France
+- Germany
+- Belgium
+- Italy
+- Luxembourg
+- Morocco
+- Poland
+- Switzerland
+- Nordic countries
+- India
+
+Source:
+https://group.bnpparibas/en/group/about-us/corporate-philanthropy
+
+============================================================
+26. BNP PARIBAS INDIA
+============================================================
+
+BNP Paribas has a significant international presence in India as part of its global network.
+
+The Group's worldwide organisation includes BNP Paribas India-related activities and the BNP Paribas India Foundation.
+
+For India-specific:
+- Banking services
+- Careers
+- Business activities
+- Corporate philanthropy
+- Foundation initiatives
+
+the relevant local BNP Paribas entity or BNP Paribas India source should be consulted because products, regulations and customer services can differ by country.
+
+Source:
+https://group.bnpparibas/en/group/bnp-paribas-worldwide
+
+============================================================
+27. GLOBAL PRESENCE
+============================================================
+
+BNP Paribas operates across:
+- Europe
+- Americas
+- Asia-Pacific
+- Africa
+- Middle East
+
+The Group has:
+- 64 countries and territories
+- More than 180,000 employees
+
+The Group describes Europe as its core regional base while maintaining an international banking footprint.
+
+Regional employee distribution at 31 December 2025:
+Europe: 146,139
+Asia-Pacific: 20,831
+Africa: 5,186
+North America: 5,136
+South America: 3,245
+Middle East: 458
+
+Source:
+https://group.bnpparibas/en/group
+https://group.bnpparibas/en/group/bnp-paribas-worldwide
+
+============================================================
+28. FINANCIAL INFORMATION
+============================================================
+
+Key year-end 2025 figures:
+- Revenue: EUR 52.2 billion
+- Net income, Group share: EUR 12.2 billion
+- CET1 ratio: 12.6%
+
+The BNP Paribas Group also publishes quarterly and annual results.
+
+Recent 2026 financial-information publications listed by the Group include:
+- Results as of 31 March 2026
+- Results as of 30 June 2026
+- Other financial announcements and business transactions
+
+Because financial information changes over time, chatbot answers about current results should state the reporting date.
+
+Source:
+https://group.bnpparibas/en/all-news/financial-information
+https://group.bnpparibas/en/press-release/bnp-paribas-group-results-as-of-30-june-2026
+
+============================================================
+29. RECENT 2026 INFORMATION
+============================================================
+
+The official BNP Paribas website in September 2026 contains recent news covering:
+- Innovation and technology
+- Artificial intelligence
+- Sustainable finance
+- Group strategy
+- WealthTech
+- Financial results
+- Business partnerships
+- Careers
+- Corporate philanthropy
+
+Examples of 2026 topics include:
+- Responsible AI
+- AI research at BNP Paribas
+- Generative AI partnership developments
+- 2026 financial results
+- Sustainable finance initiatives
+- Wealth management and WealthTech
+- SME and mid-sized company financing
+- Technology deployment
+
+Current news should always be retrieved from:
+https://group.bnpparibas/en/
+
+============================================================
+30. TENNIS AND CINEMA PARTNERSHIPS
+============================================================
+
+BNP Paribas has long-standing partnerships in:
+- Tennis
+- Cinema
+
+The Group identifies tennis and cinema as important sponsorship areas.
+
+The Group's tennis partnerships are part of its long-standing brand and sponsorship strategy.
+
+============================================================
+31. KEY BNP PARIBAS BUSINESS NAMES — QUICK REFERENCE
+============================================================
+
+Group:
+BNP Paribas Group
+
+Operating divisions:
+- CIB = Corporate & Institutional Banking
+- CPBS = Commercial, Personal Banking & Services
+- IPS = Investment & Protection Services
+
+CIB:
+- Global Banking
+- Global Markets
+- Securities Services
+
+CPBS:
+- French Commercial Banking
+- BNP Paribas Fortis
+- BNL BNP Paribas
+- BGL BNP Paribas
+- Europe-Mediterranean
+- Arval
+- BNP Paribas Leasing Solutions
+- BNP Paribas Personal Finance
+- BNP Paribas Personal Investors
+- Nickel
+
+IPS:
+- BNP Paribas Cardif
+- BNP Paribas Asset Management
+- BNP Paribas Wealth Management
+- BNP Paribas Real Estate
+
+============================================================
+32. COMMON QUESTIONS AND ANSWERS
+============================================================
+
+Q: What is BNP Paribas?
+A: BNP Paribas is a European leader in banking and financial services with a global presence. It operates in 64 countries and territories and has more than 180,000 employees.
+
+Q: When was BNP Paribas created?
+A: BNP Paribas was officially established on 23 May 2000 through the merger of BNP and Paribas.
+
+Q: What are BNP Paribas' three operating divisions?
+A: Corporate & Institutional Banking (CIB), Commercial, Personal Banking & Services (CPBS), and Investment & Protection Services (IPS).
+
+Q: What does CIB mean?
+A: CIB means Corporate & Institutional Banking. It serves corporate clients and institutional investors.
+
+Q: What does CPBS mean?
+A: CPBS means Commercial, Personal Banking & Services. It combines commercial banking networks and specialised businesses.
+
+Q: What does IPS mean?
+A: IPS means Investment & Protection Services. It combines insurance, asset management, wealth management and real-estate services.
+
+Q: Who does BNP Paribas serve?
+A: BNP Paribas serves individuals, professionals, entrepreneurs, SMEs, large companies, institutional investors and other organisations.
+
+Q: How many countries does BNP Paribas operate in?
+A: BNP Paribas operates in 64 countries and territories according to the Group's 2026 information.
+
+Q: How many employees does BNP Paribas have?
+A: More than 180,000 employees.
+
+Q: What is BNP Paribas' company purpose?
+A: "We are at the service of our clients and the world we live in."
+
+Q: What is BNP Paribas' strategy?
+A: Its strategic plan is built around Growth, Technology and Sustainability.
+
+Q: What is BNP Paribas doing in sustainable finance?
+A: BNP Paribas supports customers' transitions toward a low-carbon economy, biodiversity protection and more inclusive development through financing, investment and other financial solutions.
+
+Q: Does BNP Paribas use AI?
+A: Yes. BNP Paribas has used artificial intelligence in tools and processes since 2016 and uses AI for customer experience, operational efficiency, risk detection, fraud detection, cybersecurity and other applications.
+
+Q: Does BNP Paribas use generative AI?
+A: Yes. The Group has identified and developed generative AI use cases and has partnerships in the AI ecosystem. It states that generative AI is being developed and deployed within a responsible and controlled framework.
+
+Q: What companies are part of CPBS?
+A: CPBS includes commercial banking networks and specialised businesses such as Arval, BNP Paribas Leasing Solutions, BNP Paribas Personal Finance, BNP Paribas Personal Investors and Nickel.
+
+Q: What companies are part of IPS?
+A: IPS includes BNP Paribas Cardif, BNP Paribas Asset Management, BNP Paribas Wealth Management and BNP Paribas Real Estate.
+
+Q: What is Arval?
+A: Arval is BNP Paribas' mobility business providing vehicle and mobility solutions for companies, employees and individuals.
+
+Q: What is BNP Paribas Cardif?
+A: BNP Paribas Cardif is the Group's insurance and protection business.
+
+Q: What is BNP Paribas Asset Management?
+A: It is the Group's asset-management business, providing investment strategies and solutions for different types of investors.
+
+Q: What is BNP Paribas Wealth Management?
+A: It is the Group's private banking and wealth-management business serving high-net-worth clients.
+
+Q: What is BNP Paribas Real Estate?
+A: It provides real-estate services across areas such as investment, development, property management and related advisory services.
+
+Q: Does BNP Paribas offer careers in technology?
+A: Yes. Its careers site lists IT, Technology and Data among its professional areas.
+
+Q: What are BNP Paribas' philanthropy areas?
+A: Solidarity, environment and culture.
+
+============================================================
+33. SEARCH / RETRIEVAL SYNONYMS
+============================================================
+
+The following terms can refer to the same BNP Paribas concepts:
+
+BNP Paribas = BNP Paribas Group = BNP Paribas bank = Group BNP Paribas
+
+CIB = Corporate & Institutional Banking = Corporate and Institutional Banking
+
+CPBS = Commercial, Personal Banking & Services = Commercial Personal Banking Services
+
+IPS = Investment & Protection Services = Investment and Protection Services
+
+Global Banking = CIB Global Banking
+
+Global Markets = CIB Global Markets
+
+Securities Services = CIB Securities Services = securities custody and administration
+
+Cardif = BNP Paribas Cardif = insurance and protection business
+
+Asset Management = BNP Paribas Asset Management = investment management
+
+Wealth Management = BNP Paribas Wealth Management = private banking
+
+Real Estate = BNP Paribas Real Estate = real-estate services
+
+Arval = BNP Paribas mobility business
+
+Leasing Solutions = BNP Paribas Leasing Solutions = equipment leasing and financing
+
+Personal Finance = BNP Paribas Personal Finance = consumer finance
+
+Personal Investors = BNP Paribas Personal Investors = digital banking and investment services
+
+Nickel = BNP Paribas Nickel = accessible current-account service
+
+Sustainable finance = sustainable banking = transition finance = responsible finance
+
+AI = artificial intelligence
+
+GenAI = generative AI
+
+ESG = environmental, social and governance
+
+CET1 = Common Equity Tier 1
+
+CSR = corporate social responsibility
+
+============================================================
+34. ANSWERING RULES FOR A BNP PARIBAS KNOWLEDGE CHATBOT
+============================================================
+
+When answering a question about BNP Paribas:
+
+1. Prefer the most specific information in this knowledge base.
+2. If the question concerns a number, always mention the date of the number.
+3. If the question asks about current news, current share price, current job openings, current financial results or another changing item, say that the latest official website should be checked.
+4. Do not confuse the BNP Paribas Group with one particular local banking entity.
+5. If a question asks about a product or service in a particular country, country-specific BNP Paribas websites may have different information.
+6. Distinguish the Group from its individual business lines.
+7. Use the official source URLs in this document when the user asks for more information.
+8. Do not invent products, branches, employees, financial figures or job vacancies.
+9. When a fact is historical, do not present it as current.
+10. When two figures have different reporting dates, explicitly state both dates.
+
+============================================================
+35. OFFICIAL SOURCE DIRECTORY
+============================================================
+
+BNP Paribas Group homepage:
+https://group.bnpparibas/en/
+
+Group overview:
+https://group.bnpparibas/en/group
+
+About BNP Paribas:
+https://group.bnpparibas/en/group/about-us
+
+Business model:
+https://group.bnpparibas/en/group/about-us/business-model
+
+Company purpose:
+https://group.bnpparibas/en/group/about-us/company-purpose
+
+History:
+https://group.bnpparibas/en/group/about-us/company-history
+
+Strategic plan:
+https://group.bnpparibas/en/group/about-us/strategic-plan
+
+Businesses and expertise:
+https://group.bnpparibas/en/group/our-businesses-and-expertise
+
+CIB:
+https://group.bnpparibas/en/group/our-businesses-and-expertise/corporate-institutional-banking
+
+CPBS:
+https://group.bnpparibas/en/group/our-businesses-and-expertise/commercial-personal-banking-services
+
+IPS:
+https://group.bnpparibas/en/group/our-businesses-and-expertise/investment-protection-services
+
+Governance:
+https://group.bnpparibas/en/group/our-governance
+
+Board of Directors:
+https://group.bnpparibas/en/group/our-governance/board-of-directors
+
+Worldwide presence:
+https://group.bnpparibas/en/group/bnp-paribas-worldwide
+
+Commitments:
+https://group.bnpparibas/en/our-commitments
+
+Transitions:
+https://group.bnpparibas/en/our-commitments/transitions
+
+Inclusion:
+https://group.bnpparibas/en/our-commitments/inclusion
+
+Diversity and equality:
+https://group.bnpparibas/en/our-commitments/inclusion/diversity-equality-and-inclusion
+
+Financial and social inclusion:
+https://group.bnpparibas/en/our-commitments/inclusion/financial-and-social-inclusion
+
+Innovation:
+https://group.bnpparibas/en/our-commitments/innovation
+
+Data and AI:
+https://group.bnpparibas/en/our-commitments/innovation/data-artificial-intelligence
+
+Careers:
+https://group.bnpparibas/en/careers
+
+Corporate philanthropy:
+https://group.bnpparibas/en/group/about-us/corporate-philanthropy
+
+Financial information:
+https://group.bnpparibas/en/all-news/financial-information
+
+News:
+https://group.bnpparibas/en/
+
+============================================================
+END OF BNP PARIBAS KNOWLEDGE BASE
+============================================================

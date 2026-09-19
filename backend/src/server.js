@@ -19,6 +19,7 @@ import reportRoutes from './routes/reports.js';
 import auditRoutes from './routes/audit.js';
 import userRoutes from './routes/users.js';
 import documentRoutes from './routes/documents.js';
+import bnpChatRoutes from './routes/bnpChat.js';
 
 const app = express();
 app.use(helmet());
@@ -43,6 +44,7 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/audit', auditRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/documents', documentRoutes);
+app.use('/api/bnp-chat', bnpChatRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

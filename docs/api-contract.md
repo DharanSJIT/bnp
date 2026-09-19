@@ -58,6 +58,7 @@ Base URL: `http://127.0.0.1:4000` (proxy `/api` in dev). JWT via `Authorization:
 - `POST /api/breaks/bulk-decide` body `{breakIds: [], decision, decisionComment?}` → `{ processed }`.
 - `POST /api/breaks/bulk-decide/upload` — multipart `file` (CSV with columns `break_id,decision[,comment]`) → `{ processed, errors }`.
 - `POST /api/breaks/:breakId/chat` body `{question}` → `{ answer, evidence: [] }`.
+- `POST /api/bnp-chat` (authenticated) body `{question}` → `{ answer, sources: [{title}], usedGroq }` — general questions about the BNP Paribas Group, answered by Groq RAG over `bnp_paribas_knowledge_base.txt` (backend proxies to AI service `/ai/bnp-chat`; no workflow required).
 
 ### Reports & comparison
 - `GET /api/reports/:runId` → `{ run, totalBreaks, byType: {transactional, dimensional}, byStatus: {...}, trend: [{runId, startedAt, status, matchRate, breaks}], top10: [break...] }`.
