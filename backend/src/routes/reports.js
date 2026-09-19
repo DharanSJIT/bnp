@@ -7,12 +7,17 @@ import { Break } from '../models/Break.js';
 import { Report } from '../models/Report.js';
 import { JoinMap } from '../models/JoinMap.js';
 import { RawTransaction } from '../models/RawTransaction.js';
+import { User } from '../models/User.js';
 import { auth } from '../middleware/auth.js';
 import { auditFor } from '../services/auditService.js';
 import { exportData } from '../services/exportService.js';
+import { sendReportEmail } from '../services/emailService.js';
 
 const router = Router();
 router.use(auth);
+
+const REPORT_FORMATS = ['csv', 'xlsx', 'json', 'pdf', 'xml', 'text'];
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 async function getRun(req, res) {
   const run = await ReconciliationRun.findById(req.params.runId);
@@ -64,6 +69,134 @@ router.get('/:runId', async (req, res, next) => {
     });
   } catch (err) {
     next(err);
+  }
+});
+
+// ---------- email delivery ----------
+
+// Users/roles who may act on a run's report: admins and the workflow owner.
+async function canHandleRun(req, run) {
+  if (req.user.role === 'admin') return true;
+  const workflow = await Workflow.findById(run.workflowId).lean();
+  return !!workflow && workflow.createdBy.toString() === req.user._id.toString();
+}
+
+// Suggested recipients for the current workflow/run: the outbound "notify email"
+// configured for the workflow, the workflow owner, and the user who ran it.
+async function resolveReportRecipients(workflow, run) {
+  const defaults = [];
+  if (workflow?.outboundConfig?.email) defaults.push(String(workflow.outboundConfig.email).trim());
+  if (workflow?.createdBy) {
+    const owner = await User.findById(workflow.createdBy).lean();
+    if (owner) defaults.push(owner.email);
+  }
+  if (run.runBy) {
+    const runner = await User.findById(run.runBy).lean();
+    if (runner) defaults.push(runner.email);
+  }
+  const candidates = await User.find({ active: true }).select('name email role').sort({ name: 1 }).lean();
+  const uniqueDefaults = [...new Set(defaults.map((e) => String(e).toLowerCase().trim()).filter(Boolean))];
+  return { defaults: uniqueDefaults, candidates };
+}
+
+// Generate the report document, attach it to an email, record the delivery and audit it.
+// Reused by the manual "email report" endpoint and by auto-delivery after a run completes.
+export async function deliverReportByEmail({ req, run, workflow, to, format = 'xlsx', subject, message }) {
+  const breaks = await Break.find({ runId: run._id }).sort({ priorityScore: -1 }).lean();
+  const rows = breaks.map(flatBreak);
+  const meta = {
+    runId: run._id.toString(),
+    workflowId: run.workflowId.toString(),
+    period: run.period,
+    status: run.status,
+    matchRate: `${(run.matchRate * 100).toFixed(2)}%`,
+    counts: run.counts,
+    totals: run.totals,
+    notes: 'Final decisions rest with authorized personnel.',
+  };
+  const filePath = await exportData({
+    format,
+    fileName: `run_${run._id}_break_report`,
+    title: `OneRecon Break Report — Run ${run._id} (period ${run.period || 'n/a'})`,
+    meta,
+    rows,
+    sheets: format === 'xlsx' ? { BreakSummary: rows } : undefined,
+  });
+  const fileName = filePath.split('/').pop();
+  const info = await sendReportEmail({
+    to,
+    subject: subject || `OneRecon Break Report — ${workflow?.name || run._id}`,
+    message,
+    filePath,
+    fileName,
+  });
+  await Report.create({
+    workflowId: run.workflowId,
+    runId: run._id,
+    type: 'summary',
+    format,
+    fileName,
+    filePath,
+    meta: { delivery: 'email', sentTo: to, messageId: info?.messageId || '', count: rows.length },
+  });
+  await auditFor(req)({
+    workflowId: run.workflowId,
+    action: 'report.emailed',
+    entity: 'report',
+    entityId: run._id.toString(),
+    after: { to, format, messageId: info?.messageId || '' },
+  });
+  return info;
+}
+
+// GET /api/reports/:runId/email-recipients — recipient suggestions + user directory for the email modal
+router.get('/:runId/email-recipients', async (req, res, next) => {
+  try {
+    const run = await getRun(req, res);
+    if (!run) return;
+    if (!(await canHandleRun(req, run))) return res.status(403).json({ error: 'Not your workflow' });
+    const workflow = await Workflow.findById(run.workflowId).lean();
+    const { defaults, candidates } = await resolveReportRecipients(workflow, run);
+    const visible = req.user.role === 'admin'
+      ? candidates
+      : candidates.filter((c) => defaults.includes(c.email));
+    res.json({
+      runId: run._id,
+      workflowName: workflow?.name || '',
+      period: run.period || workflow?.period || '',
+      defaults,
+      formats: REPORT_FORMATS,
+      candidates: visible,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/reports/:runId/email — send the report document to the given recipients
+router.post('/:runId/email', async (req, res, next) => {
+  try {
+    const run = await getRun(req, res);
+    if (!run) return;
+    if (!(await canHandleRun(req, run))) return res.status(403).json({ error: 'Not your workflow' });
+    if (run.status !== 'success') return res.status(400).json({ error: 'Only a completed run can be emailed' });
+
+    const { to, format = 'xlsx', subject, message } = req.body || {};
+    const toList = (Array.isArray(to) ? to : String(to || '').split(/[,\s;]+/))
+      .map((s) => String(s).trim().toLowerCase())
+      .filter(Boolean);
+    if (toList.length === 0) return res.status(400).json({ error: 'At least one recipient email is required' });
+    const invalid = toList.filter((e) => !EMAIL_RE.test(e));
+    if (invalid.length) return res.status(400).json({ error: `Invalid email address(es): ${invalid.join(', ')}` });
+    const fmt = REPORT_FORMATS.includes(format) ? format : 'xlsx';
+
+    const workflow = await Workflow.findById(run.workflowId).lean();
+    const emailSubject = subject || `OneRecon Break Report — ${workflow?.name || run._id}`;
+    const info = await deliverReportByEmail({ req, run, workflow, to: toList, format: fmt, subject: emailSubject, message });
+
+    res.json({ message: `Report (${fmt}) emailed to ${toList.join(', ')}`, to: toList, format: fmt, messageId: info?.messageId });
+  } catch (err) {
+    res.status(502).json({ error: `Email delivery failed: ${err.message}` });
   }
 });
 

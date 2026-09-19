@@ -37,6 +37,7 @@ export default function Reports() {
   const [compareError, setCompareError] = useState(null);
   const [drillRow, setDrillRow] = useState(null);
   const [drillBreaks, setDrillBreaks] = useState(null);
+  const [emailOpen, setEmailOpen] = useState(false);
   const [copilotOpen, setCopilotOpen] = useState(false);
 
   const sources = (workflow?.sources || []).map((s) => ({ sourceId: s.sourceId, displayName: s.displayName }));
@@ -166,6 +167,7 @@ export default function Reports() {
           loading={loadingReport}
           error={reportError}
           onExport={exportReport}
+          onEmail={() => setEmailOpen(true)}
           onRun={() => loadReport()}
         />
       ) : (
@@ -242,13 +244,20 @@ export default function Reports() {
         )}
       </Modal>
 
+      <EmailReportModal
+        open={emailOpen}
+        onClose={() => setEmailOpen(false)}
+        runId={runId}
+        workflowName={workflow?.name}
+      />
+
       <Copilot open={copilotOpen} onClose={() => setCopilotOpen(false)} workflowId={id} />
     </div>
   );
 }
 
 /* --------------------------------- summary --------------------------------- */
-function SummaryTab({ report, loading, error, onExport, onRun }) {
+function SummaryTab({ report, loading, error, onExport, onEmail, onRun }) {
   if (error && !report) {
     return (
       <EmptyState
@@ -292,6 +301,7 @@ function SummaryTab({ report, loading, error, onExport, onRun }) {
           {EXPORT_FORMATS.map((f) => (
             <Button key={f} size="sm" variant="outline" onClick={() => onExport(f)}>⬇ {f.toUpperCase()}</Button>
           ))}
+          <Button size="sm" variant="outline" onClick={onEmail}>✉ EMAIL</Button>
         </div>
       </div>
 
@@ -618,5 +628,141 @@ function FlatList({ title, items, tone = 'brk' }) {
         </table>
       </div>
     </Card>
+  );
+}
+
+/* --------------------------------- email report --------------------------------- */
+function EmailReportModal({ open, onClose, runId, workflowName }) {
+  const toast = useToast((s) => s.add);
+
+  const [meta, setMeta] = useState(null);       // { workflowName, period, defaults, formats, candidates }
+  const [toText, setToText] = useState('');
+  const [format, setFormat] = useState('xlsx');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [sending, setSending] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!open || !runId) return;
+    let cancelled = false;
+    setLoaded(false);
+    setSending(false);
+    api
+      .get(`/reports/${runId}/email-recipients`)
+      .then((res) => {
+        if (cancelled) return;
+        const m = res.data || {};
+        setMeta(m);
+        setToText((m.defaults || []).join(', '));
+        setFormat('xlsx');
+        setSubject(`OneRecon Break Report — ${m.workflowName || workflowName || 'Reconciliation'}`);
+        setMessage(`Please find the final reconciliation report attached.\n\nWorkflow: ${m.workflowName || workflowName || '—'}\nPeriod: ${m.period || '—'}\n\nThis is an automated delivery from OneRecon.`);
+        setLoaded(true);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        toast.error(errMsg(err, 'Could not load email recipients'));
+        onClose();
+      });
+    return () => { cancelled = true; };
+  }, [open, runId, workflowName]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const parseRecipients = () =>
+    toText
+      .split(/[,\s;]+/)
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean);
+
+  const toggleCandidate = (email) => {
+    const list = parseRecipients();
+    const next = list.includes(email) ? list.filter((e) => e !== email) : [...list, email];
+    setToText(next.join(', '));
+  };
+
+  const send = async () => {
+    const to = parseRecipients();
+    if (to.length === 0) {
+      toast.error('Add at least one recipient email');
+      return;
+    }
+    setSending(true);
+    try {
+      const { data } = await api.post(`/reports/${runId}/email`, { to, format, subject: subject.trim(), message: message.trim() });
+      toast.success(data.message || 'Report emailed');
+      onClose();
+    } catch (err) {
+      toast.error(errMsg(err, 'Email failed'));
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const candidates = meta?.candidates || [];
+
+  return (
+    <Modal open={open} onClose={onClose} title="Email report" width="lg">
+      <div className="space-y-4">
+        <div>
+          <label className="label">Recipients ({parseRecipients().length})</label>
+          <textarea
+            rows={2}
+            className="input w-full font-mono"
+            placeholder="recon-team@bank.com, approver@onerecon.io"
+            value={toText}
+            onChange={(e) => setToText(e.target.value)}
+          />
+          {candidates.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {candidates.map((c) => {
+                const on = parseRecipients().includes(c.email);
+                return (
+                  <button
+                    key={c._id}
+                    type="button"
+                    onClick={() => toggleCandidate(c.email)}
+                    className={clsx(
+                      'rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors',
+                      on
+                        ? 'border-ledger-accent bg-ledger-accent text-white'
+                        : 'border-ledger-line text-ledger-meta hover:border-ledger-accent hover:text-ledger-ink'
+                    )}
+                  >
+                    {c.name} · {c.role} {on && '✓'}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <label className="label">Format</label>
+            <select className="input w-full" value={format} onChange={(e) => setFormat(e.target.value)}>
+              {(meta?.formats || ['csv', 'xlsx', 'json', 'pdf', 'xml', 'text']).map((f) => (
+                <option key={f} value={f}>{f.toUpperCase()}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="label">Subject</label>
+            <input className="input w-full" value={subject} onChange={(e) => setSubject(e.target.value)} />
+          </div>
+        </div>
+
+        <div>
+          <label className="label">Message</label>
+          <textarea rows={4} className="input w-full" value={message} onChange={(e) => setMessage(e.target.value)} />
+        </div>
+
+        <div className="flex items-center justify-end gap-2">
+          <Button variant="outline" onClick={onClose} disabled={sending}>Cancel</Button>
+          <Button onClick={send} loading={sending} disabled={!loaded}>
+            {sending ? 'Sending…' : '✉ Send report'}
+          </Button>
+        </div>
+      </div>
+    </Modal>
   );
 }

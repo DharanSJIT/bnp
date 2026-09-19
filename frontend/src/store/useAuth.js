@@ -63,13 +63,3 @@ export const ROLE_LABEL = {
   accountant: 'Accountant',
   cashier: 'Cashier',
 };
-
-// roles a newly self-registered user may pick (never admin)
-export const REGISTER_ROLES = [
-  { value: 'investigator', label: 'Investigator' },
-  { value: 'monitor', label: 'Monitor' },
-  { value: 'accountant', label: 'Accountant' },
-  { value: 'cashier', label: 'Cashier' },
-  { value: 'manager', label: 'Manager' },
-  { value: 'approver', label: 'Approver' },
-];

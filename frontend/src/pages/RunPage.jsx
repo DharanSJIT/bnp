@@ -129,10 +129,10 @@ export default function RunPage() {
               onChange={(e) => setOutbound({ ...outbound, api: e.target.value })}
               onBlur={(e) => patchOutbound({ api: e.target.value })}
             />
-            <p className="mt-1 text-small text-ledger-meta">Stored for this workflow (delivery not executed in this build).</p>
+            <p className="mt-1 text-small text-ledger-meta">Stored for this workflow (HTTP delivery not executed in this build).</p>
           </div>
           <div>
-            <label className="label">Notify email</label>
+            <label className="label">Email report to</label>
             <input
               className="input"
               placeholder="recon-team@bank.com"
@@ -141,6 +141,7 @@ export default function RunPage() {
               onChange={(e) => setOutbound({ ...outbound, email: e.target.value })}
               onBlur={(e) => patchOutbound({ email: e.target.value })}
             />
+            <p className="mt-1 text-small text-ledger-meta">The final report is emailed to this address after each successful run.</p>
           </div>
         </div>
         <div className="mt-3">

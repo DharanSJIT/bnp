@@ -10,6 +10,7 @@ import { BreakInvestigation } from '../models/BreakInvestigation.js';
 import { auth, roleGuard } from '../middleware/auth.js';
 import { auditFor } from '../services/auditService.js';
 import { aiCall } from '../services/aiClient.js';
+import { deliverReportByEmail } from './reports.js';
 import fs from 'fs';
 import path from 'path';
 import { config } from '../config/env.js';
@@ -210,6 +211,27 @@ router.post('/:id/run', async (req, res, next) => {
       workflow.lastMatchRate = run.matchRate;
       workflow.lastRunAt = new Date();
       await workflow.save();
+
+      // Deliver the final document by email when the workflow owner configured a
+      // notify email. Delivery failures never fail the run — they're audited.
+      if (workflow.outboundConfig?.email) {
+        try {
+          const to = [String(workflow.outboundConfig.email).trim().toLowerCase()].filter(Boolean);
+          if (to.length) {
+            await deliverReportByEmail({
+              req,
+              run,
+              workflow,
+              to,
+              format: workflow.outboundConfig.filePdf ? 'pdf' : 'xlsx',
+              subject: `OneRecon Break Report — ${workflow.name}`,
+              message: `Reconciliation for "${workflow.name}" completed with a ${(run.matchRate * 100).toFixed(2)}% match rate and ${run.counts?.breaks || 0} break(s). The final report is attached.\n\nThis is an automated notification from OneRecon.`,
+            });
+          }
+        } catch (err) {
+          await auditFor(req)({ workflowId: workflow._id, action: 'report.email.failed', entity: 'reconciliation_run', entityId: run._id.toString(), after: { error: err.message } });
+        }
+      }
 
       await auditFor(req)({ workflowId: workflow._id, action: 'run.completed', entity: 'reconciliation_run', entityId: run._id.toString(), after: { status: run.status, matchRate: run.matchRate, breaks: run.counts.breaks } });
       res.json({ run, summary: result.summary || null });

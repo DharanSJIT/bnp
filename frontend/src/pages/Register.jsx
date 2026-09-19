@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAuth, REGISTER_ROLES } from '../store/useAuth';
+import { useAuth } from '../store/useAuth';
 import { Button, Spinner } from '../components/ui.jsx';
 import api, { errMsg } from '../lib/api';
 
 export default function Register() {
   const { register, loginError, loggingIn } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '', role: 'investigator', otp: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '', otp: '' });
   const [show, setShow] = useState(false);
   const [localError, setLocalError] = useState(null);
   const [otpStep, setOtpStep] = useState(false);
@@ -50,7 +50,7 @@ export default function Register() {
       return;
     }
     try {
-      await register({ name: form.name, email: form.email, password: form.password, role: form.role, otp: form.otp });
+      await register({ name: form.name, email: form.email, password: form.password, otp: form.otp });
       navigate('/dashboard', { replace: true });
     } catch {
       /* loginError surfaced below */
@@ -95,16 +95,9 @@ export default function Register() {
                 <input type={show ? 'text' : 'password'} className="input" placeholder="••••••" value={form.confirm} onChange={set('confirm')} autoComplete="new-password" required />
               </div>
             </div>
-            <div>
-              <label className="label" htmlFor="role">Your role</label>
-              <select id="role" className="input" value={form.role} onChange={set('role')}>
-                {REGISTER_ROLES.map((r) => (
-                  <option key={r.value} value={r.value}>{r.label}</option>
-                ))}
-              </select>
-              <p className="mt-1.5 text-small text-ledger-meta">
-                Administrative roles are created by the system administrator.
-              </p>
+            <div className="rounded-lg border border-ledger-line bg-ledger-panel px-3 py-2.5 text-small text-ledger-meta">
+              Account type: <b className="text-ledger-ink">Report user</b> — you can create workflows, run reconciliations, and generate
+              and download the reports. Role assignments are handled by your administrator.
             </div>
 
             <div className="flex items-center gap-2">
