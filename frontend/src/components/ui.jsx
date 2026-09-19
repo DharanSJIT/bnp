@@ -41,7 +41,7 @@ export function Spinner({ className }) {
 /* ------------------------------------ Chip ----------------------------------- */
 const CHIP_STYLES = {
   match: 'border-ledger-match text-ledger-match',
-  potential: 'border-ledger-potential text-[#3F6212]',
+  potential: 'border-ledger-potential text-[#0f5c2e]',
   brk: 'border-ledger-brk text-ledger-brk',
   reconcile: 'border-ledger-reconcile text-ledger-reconcile',
   neutral: 'border-ledger-line text-ledger-meta',
@@ -81,9 +81,9 @@ export function Card({ className, children, ...rest }) {
 export function PageHeader({ title, subtitle, actions }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.15 }}
+      transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
       className="mb-5 flex flex-wrap items-end justify-between gap-3"
     >
       <div>
@@ -117,9 +117,9 @@ export function SkeletonRows({ rows = 4, cols = 4 }) {
 export function EmptyState({ title, message, icon = '▦', action }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.15 }}
+      initial={{ opacity: 0, scale: 0.98, y: 12 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
       className="flex flex-col items-center justify-center rounded-panel border border-dashed border-ledger-line bg-ledger-panel px-6 py-14 text-center"
     >
       <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-ledger-line bg-white text-xl text-ledger-meta">
@@ -236,10 +236,10 @@ export function Modal({ open, onClose, title, children, width = 'md' }) {
           onMouseDown={(e) => e.target === e.currentTarget && onClose && onClose()}
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.97 }}
-            transition={{ duration: 0.2 }}
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ duration: 0.3, ease: [0.25, 1, 0.5, 1] }}
             className={clsx('w-full overflow-hidden rounded-panel border border-ledger-line bg-white shadow-hover', widths[width])}
           >
             {title && (

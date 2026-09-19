@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import api, { errMsg } from '../lib/api';
 import { clsx } from '../lib/format';
 import { Button, Card, Chip, EmptyState, PageHeader, SkeletonRows } from '../components/ui.jsx';
@@ -10,7 +11,7 @@ const key = (sourceId, name) => `${sourceId}|${name}`;
 const STATUS_TONE = { common: 'match', potential: 'potential', uncommon: 'brk' };
 const CHIP_TONE_BORDER = {
   match: 'border-ledger-match text-ledger-match',
-  potential: 'border-ledger-potential text-[#4D7C0F]',
+  potential: 'border-ledger-potential text-[#0f5c2e]',
   brk: 'border-ledger-brk text-ledger-brk',
 };
 const AMOUNT_NAMES = ['amount', 'value', 'total', 'balance'];
@@ -21,13 +22,6 @@ function nameSim(a, b) {
   if (!na || !nb) return 0;
   if (na === nb) return 1;
   return na.includes(nb) || nb.includes(na) ? 0.82 : 0.5;
-}
-
-function newGroupConfidence(a, b) {
-  const s = nameSim(a, b);
-  if (s >= 1) return 0.97;
-  if (s >= 0.8) return 0.8;
-  return 0.58;
 }
 
 function FieldChip({ fieldKey, meta, tone, selected, dragging, onSelect, onDragStart, onRemove, onDropConnect }) {
@@ -132,8 +126,14 @@ function SourcePanel({ source, groups, unassigned, query, onQuery, selectedKey, 
               <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
                 {g.isReconcileField && <span className="h-1.5 w-1.5 rounded-full bg-ledger-reconcile" title="reconcile target" />}
                 <span className="field-id text-small font-medium">{g.targetGroupId}</span>
-                <Chip tone={STATUS_TONE[g.status] || 'neutral'} dot>{g.status}</Chip>
-                <span className="font-mono text-[11px] text-ledger-meta">{Math.round((g.confidence || 0) * 100)}%</span>
+                {g.overriddenByUser ? (
+                  <Chip tone="accent" dot>MANUAL OVERRIDE</Chip>
+                ) : (
+                  <>
+                    <Chip tone={STATUS_TONE[g.status] || 'neutral'} dot>{g.status}</Chip>
+                    <span className="font-mono text-[11px] text-ledger-meta">{Math.round((g.confidence || 0) * 100)}%</span>
+                  </>
+                )}
                 <button
                   onClick={() => onToggleReconcile(g)}
                   title="Toggle reconcile field"
@@ -207,6 +207,7 @@ export default function Mapping() {
   const [fieldMeta, setFieldMeta] = useState(new Map());
   const [groups, setGroups] = useState([]);
   const [unassigned, setUnassigned] = useState([]);
+  const [originalData, setOriginalData] = useState(null);
   const [history, setHistory] = useState([]);
   const [selected, setSelected] = useState(null);
   const [dragging, setDragging] = useState(null);
@@ -296,7 +297,10 @@ export default function Mapping() {
     const fetchSuggestions = async () => {
       try {
         const { data } = await api.get(`/workflows/${id}/mapping-suggestions`);
-        if (!cancelled) applyData(data, !!existing);
+        if (!cancelled) {
+          setOriginalData(data);
+          applyData(data, !!existing);
+        }
       } catch (err) {
         if (cancelled) return;
         setSugError(errMsg(err, 'Could not load mapping suggestions'));
@@ -335,91 +339,81 @@ export default function Mapping() {
     const [srcA, nameA] = kA.split('|');
     const [srcB, nameB] = kB.split('|');
     if (srcA === srcB) return;
-    const gA = groupOf(kA);
-    const gB = groupOf(kB);
 
     let nextGroups = groups.map((g) => ({ ...g, fields: [...g.fields] }));
+    let orphans = [];
     let nextUnassigned = [...unassigned];
 
-    // collapse any 1-member groups that would be invalid after mutation
-    const collapseSingletons = (list) => {
-      const orphans = [];
-      const kept = [];
-      for (const g of list) {
-        if (g.fields.length === 1) {
-          const f = g.fields[0];
-          orphans.push({ sourceId: f.sourceId, name: f.fieldName });
-        } else {
-          kept.push(g);
-        }
+    const extractField = (k) => {
+      const [src, name] = k.split('|');
+      nextUnassigned = nextUnassigned.filter(f => key(f.sourceId, f.name) !== k);
+      for (const g of nextGroups) {
+        g.fields = g.fields.filter(f => key(f.sourceId, f.fieldName) !== k);
       }
-      return { kept, orphans };
-    };
-    const nextUn = (list, orphans) => {
-      const un = nextUnassigned.filter((f) => !orphans.some((o) => key(o.sourceId, o.name) === key(f.sourceId, f.name)));
-      return [...un, ...orphans];
+      return { sourceId: src, fieldName: name };
     };
 
-    if (gA && gB) {
-      if (gA.targetGroupId === gB.targetGroupId) return;
-      const target = nextGroups.find((g) => g.targetGroupId === gA.targetGroupId);
-      const absorbed = nextGroups.find((g) => g.targetGroupId === gB.targetGroupId);
-      target.fields.push(...absorbed.fields);
-      target.confidence = Math.min(target.confidence || 0, absorbed.confidence || 0);
-      target.overriddenByUser = true;
-      if (target.status === 'common' && absorbed.status !== 'common') target.status = 'potential';
-      nextGroups = nextGroups.filter((g) => g.targetGroupId !== gB.targetGroupId);
-      const { kept, orphans } = collapseSingletons(nextGroups);
-      pushHistory(kept, nextUn(kept, orphans));
-    } else if (gA) {
-      const target = nextGroups.find((g) => g.targetGroupId === gA.targetGroupId);
-      if (!target.fields.some((f) => key(f.sourceId, f.fieldName) === kB)) {
-        target.fields.push({ sourceId: srcB, fieldName: nameB });
-        target.overriddenByUser = true;
-        if (target.status === 'common' && nameSim(target.targetGroupId, nameB) < 0.9) target.status = 'potential';
-        nextUnassigned = nextUnassigned.filter((f) => key(f.sourceId, f.name) !== kB);
+    const evictSourceFromGroup = (g, src) => {
+      const existing = g.fields.find(f => f.sourceId === src);
+      if (existing) {
+        g.fields = g.fields.filter(f => f.sourceId !== src);
+        orphans.push({ sourceId: existing.sourceId, name: existing.fieldName });
       }
-      const { kept, orphans } = collapseSingletons(nextGroups);
-      pushHistory(kept, nextUn(kept, orphans));
-    } else if (gB) {
-      const target = nextGroups.find((g) => g.targetGroupId === gB.targetGroupId);
-      if (!target.fields.some((f) => key(f.sourceId, f.fieldName) === kA)) {
-        target.fields.push({ sourceId: srcA, fieldName: nameA });
-        target.overriddenByUser = true;
-        if (target.status === 'common' && nameSim(target.targetGroupId, nameA) < 0.9) target.status = 'potential';
-        nextUnassigned = nextUnassigned.filter((f) => key(f.sourceId, f.name) !== kA);
-      }
-      const { kept, orphans } = collapseSingletons(nextGroups);
-      pushHistory(kept, nextUn(kept, orphans));
-    } else {
-      const fa = unassignedField(kA);
-      const fb = unassignedField(kB);
-      if (!fa || !fb) return;
-      const conf = newGroupConfidence(nameA, nameB);
-      if (conf < 0.75) {
-        toast.error('These fields are uncommon. Please upload a Mapping file (Join Map) to link them.');
-        setSelected(null);
-        return;
-      }
-      const bothNumeric = fieldMeta.get(kA)?.dtype === 'numeric' && fieldMeta.get(kB)?.dtype === 'numeric';
-      const isReconcile =
-        bothNumeric && AMOUNT_NAMES.some((n) => nameA.toLowerCase().includes(n) || nameB.toLowerCase().includes(n));
-      nextGroups.push({
-        targetGroupId: nameA.localeCompare(nameB) <= 0 ? nameA : nameB,
-        fields: [
-          { sourceId: srcA, fieldName: nameA },
-          { sourceId: srcB, fieldName: nameB },
-        ],
-        status: conf >= 0.95 ? 'common' : 'potential',
-        confidence: conf,
-        isReconcileField: isReconcile,
-        suggestedReconcileField: isReconcile,
-        overriddenByUser: true,
+    };
+
+    const gA_orig = groupOf(kA);
+    const gB_orig = groupOf(kB);
+    const targetGroupId = gA_orig ? gA_orig.targetGroupId : (gB_orig ? gB_orig.targetGroupId : (nameA.localeCompare(nameB) <= 0 ? nameA : nameB));
+    
+    let target = nextGroups.find(g => g.targetGroupId === targetGroupId);
+    if (!target) {
+      target = {
+        targetGroupId,
+        fields: [],
+        status: 'potential',
+        confidence: undefined,
+        isReconcileField: false,
+        suggestedReconcileField: false,
         evidence: [],
-      });
-      nextUnassigned = nextUnassigned.filter((f) => key(f.sourceId, f.name) !== kA && key(f.sourceId, f.name) !== kB);
-      pushHistory(nextGroups, nextUnassigned);
+      };
+      nextGroups.push(target);
     }
+
+    target.overriddenByUser = true;
+
+    evictSourceFromGroup(target, srcA);
+    evictSourceFromGroup(target, srcB);
+
+    const fA = extractField(kA);
+    const fB = extractField(kB);
+
+    target.fields.push(fA, fB);
+
+    const kept = [];
+    for (const g of nextGroups) {
+      if (g.fields.length < 2) {
+        if (g.fields.length === 1) {
+          orphans.push({ sourceId: g.fields[0].sourceId, name: g.fields[0].fieldName });
+        }
+      } else {
+        kept.push(g);
+      }
+    }
+
+    for (const o of orphans) {
+      if (!nextUnassigned.some(u => key(u.sourceId, u.name) === key(o.sourceId, o.name))) {
+        const meta = fieldMeta.get(key(o.sourceId, o.name));
+        nextUnassigned.push({ 
+          sourceId: o.sourceId, 
+          name: o.name,
+          dtype: meta?.dtype,
+          sampleValues: meta?.sampleValues,
+          cardinality: meta?.cardinality
+        });
+      }
+    }
+
+    pushHistory(kept, nextUnassigned);
     setSelected(null);
   };
 
@@ -449,6 +443,24 @@ export default function Mapping() {
   const clearAll = () => {
     const un = groups.flatMap((g) => g.fields.map((f) => ({ sourceId: f.sourceId, name: f.fieldName }))).concat(unassigned);
     pushHistory([], un);
+  };
+
+  const resetToAI = () => {
+    if (!originalData) return;
+    const gs = (originalData.groups || []).map((g) => ({ ...g, overriddenByUser: false }));
+    const un = (originalData.unassigned || []).map((f) => ({
+      sourceId: f.sourceId,
+      name: f.name ?? f.fieldName,
+      dtype: f.dtype,
+      sampleValues: f.sampleValues,
+      cardinality: f.cardinality,
+    }));
+    setGroups(gs);
+    setUnassigned(un);
+    applyCounts(gs, un);
+    setHistory([]);
+    setSelected(null);
+    toast.success('Reset to AI suggestions');
   };
 
   const undo = () => {
@@ -525,7 +537,8 @@ export default function Mapping() {
         actions={
           <>
             <Button variant="outline" onClick={undo} disabled={history.length === 0}>↶ Undo</Button>
-            <Button variant="outline" onClick={clearAll} disabled={groups.length === 0}>Clear all mappings</Button>
+            <Button variant="outline" onClick={resetToAI} disabled={!originalData}>Reset to AI Suggestions</Button>
+            <Button variant="outline" onClick={clearAll} disabled={groups.length === 0}>Clear all</Button>
             <Button onClick={save} loading={saving} disabled={!ready}>Save &amp; Preview</Button>
           </>
         }
@@ -566,26 +579,32 @@ export default function Mapping() {
         <Card className="p-5"><SkeletonRows rows={6} cols={3} /></Card>
       ) : (
         <div className="flex gap-3 overflow-x-auto pb-4">
-          {sources.map((s) => (
-            <SourcePanel
+          {sources.map((s, i) => (
+            <motion.div
               key={s.sourceId}
-              source={s}
-              groups={groups}
-              unassigned={unassigned}
-              fieldMeta={fieldMeta}
-              query={queries[s.sourceId] || ''}
-              onQuery={(v) => setQueries((qq) => ({ ...qq, [s.sourceId]: v }))}
-              selectedKey={selected}
-              onSelect={(k) => {
-                if (selected && selected !== k) connect(selected, k);
-                else setSelected(selected === k ? null : k);
-              }}
-              onDropConnect={connect}
-              onToggleReconcile={toggleReconcile}
-              onRemoveField={removeFromGroup}
-              draggingKey={dragging}
-              onDragStart={setDragging}
-            />
+              initial={{ opacity: 0, y: 15, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.4, delay: i * 0.1, ease: [0.25, 1, 0.5, 1] }}
+            >
+              <SourcePanel
+                source={s}
+                groups={groups}
+                unassigned={unassigned}
+                fieldMeta={fieldMeta}
+                query={queries[s.sourceId] || ''}
+                onQuery={(v) => setQueries((qq) => ({ ...qq, [s.sourceId]: v }))}
+                selectedKey={selected}
+                onSelect={(k) => {
+                  if (selected && selected !== k) connect(selected, k);
+                  else setSelected(selected === k ? null : k);
+                }}
+                onDropConnect={connect}
+                onToggleReconcile={toggleReconcile}
+                onRemoveField={removeFromGroup}
+                draggingKey={dragging}
+                onDragStart={setDragging}
+              />
+            </motion.div>
           ))}
         </div>
       )}
@@ -600,6 +619,7 @@ export default function Mapping() {
         </p>
         <div className="flex gap-2">
           <Button variant="outline" onClick={undo} disabled={history.length === 0}>↶ Undo</Button>
+          <Button variant="outline" onClick={resetToAI} disabled={!originalData}>Reset to AI</Button>
           <Button onClick={save} loading={saving} disabled={!ready}>Save &amp; proceed to Preview</Button>
         </div>
       </div>

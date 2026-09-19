@@ -20,6 +20,7 @@ const WORKFLOW_NAV = [
   { to: 'run', label: 'Run', icon: '▶' },
   { to: 'breaks', label: 'Breaks', icon: '⚠' },
   { to: 'reports', label: 'Reports', icon: '▦' },
+  { to: 'analytics', label: 'Analytics', icon: '◠' },
   { to: 'audit', label: 'Audit', icon: '≡' },
 ];
 

@@ -17,6 +17,10 @@ const runSchema = new mongoose.Schema(
     totals: { type: mongoose.Schema.Types.Mixed, default: { bySource: {} } },
     mappingsSnapshot: { type: mongoose.Schema.Types.Mixed, default: null },
     error: { type: String, default: '' },
+    approvalStatus: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+    approvalComment: { type: String, default: '' },
+    approvalBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    runBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   },
   { timestamps: true }
 );

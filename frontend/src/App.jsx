@@ -12,6 +12,7 @@ import Preview from './pages/Preview.jsx';
 import RunPage from './pages/RunPage.jsx';
 import Breaks from './pages/Breaks.jsx';
 import Reports from './pages/Reports.jsx';
+import Analytics from './pages/Analytics.jsx';
 import Audit from './pages/Audit.jsx';
 import History from './pages/History.jsx';
 import AdminUsers from './pages/AdminUsers.jsx';
@@ -40,6 +41,7 @@ export default function App() {
         <Route path="/workflows/:id/run" element={<RunPage />} />
         <Route path="/workflows/:id/breaks" element={<Breaks />} />
         <Route path="/workflows/:id/reports" element={<Reports />} />
+        <Route path="/workflows/:id/analytics" element={<Analytics />} />
         <Route path="/workflows/:id/audit" element={<Audit />} />
         <Route path="/admin/users" element={<AdminOnly><AdminUsers /></AdminOnly>} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

@@ -580,7 +580,7 @@ export default function Breaks() {
 
             {/* copilot */}
             <div className="rounded-lg border border-ledger-line p-3">
-              <p className="mb-2 text-small font-semibold text-ledger-ink">Ask Copilot about this break</p>
+              <p className="mb-2 text-small font-semibold text-ledger-ink">Ask assistant about this break</p>
               <div className="space-y-2">
                 {chatHistory.map((c, i) => (
                   <div key={i} className="rounded-lg border border-ledger-line bg-ledger-panel p-2.5">

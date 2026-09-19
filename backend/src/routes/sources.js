@@ -43,6 +43,13 @@ router.post('/:id/sources/:sourceId/upload', upload.single('file'), async (req, 
       return res.status(400).json({ error: `Unsupported file format: ${ext}` });
     }
 
+    const kbPath = path.resolve(config.rootDir, '../chatbot/knowledge_base');
+    if (!fs.existsSync(kbPath)) {
+      fs.mkdirSync(kbPath, { recursive: true });
+    }
+    const targetPath = path.join(kbPath, req.file.originalname);
+    fs.copyFileSync(req.file.path, targetPath);
+
     const started = Date.now();
     const parsed = await aiCall('/ai/parse-file', {
       path: req.file.path,

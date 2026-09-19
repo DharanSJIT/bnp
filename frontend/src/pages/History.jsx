@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api, { errMsg, downloadBlob } from '../lib/api.js';
 import { fmtDateTime } from '../lib/format';
-import { Button, Card, Chip, EmptyState, PageHeader, SkeletonRows } from '../components/ui.jsx';
+import { Button, Card, Chip, EmptyState, PageHeader, SkeletonRows, Modal } from '../components/ui.jsx';
 import { useToast } from '../store/useToast';
+import { useAuth } from '../store/useAuth';
 
 const FORMAT_TONE = { xlsx: 'match', pdf: 'brk', csv: 'accent', json: 'neutral' };
 
@@ -31,8 +32,14 @@ function RunDownload({ run, format }) {
 
 export default function History() {
   const toast = useToast((s) => s.add);
+  const user = useAuth((s) => s.user);
   const [runs, setRuns] = useState(null);
   const [error, setError] = useState(null);
+  
+  // Admin Approval State
+  const [approvalTarget, setApprovalTarget] = useState(null); // { runId, action: 'approve' | 'reject' }
+  const [approvalComment, setApprovalComment] = useState('');
+  const [submittingApproval, setSubmittingApproval] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -47,6 +54,22 @@ export default function History() {
   useEffect(() => {
     load();
   }, [load]);
+
+  const handleApproval = async () => {
+    if (!approvalTarget) return;
+    setSubmittingApproval(true);
+    try {
+      await api.post(`/runs/${approvalTarget.runId}/${approvalTarget.action}`, { comment: approvalComment });
+      toast.success(`Run ${approvalTarget.action}d successfully`);
+      setApprovalTarget(null);
+      setApprovalComment('');
+      load();
+    } catch (err) {
+      toast.error(errMsg(err, `Failed to ${approvalTarget.action} run`));
+    } finally {
+      setSubmittingApproval(false);
+    }
+  };
 
   return (
     <div>
@@ -73,9 +96,10 @@ export default function History() {
             <table className="w-full min-w-[980px] text-table">
               <thead>
                 <tr className="border-b border-ledger-line bg-ledger-panel text-left text-small text-ledger-meta">
-                  {['Workflow', 'Period', 'Status', 'Match rate', 'Breaks', 'Open', 'Started', 'Report'].map((h) => (
+                  {['Workflow', 'Period', 'Status', 'Match rate', 'Breaks', 'Open', 'Approval', 'Started', 'Report'].map((h) => (
                     <th key={h} className="px-4 py-2.5 font-medium">{h}</th>
                   ))}
+                  {user?.role === 'admin' && <th className="px-4 py-2.5 font-medium">Actions</th>}
                 </tr>
               </thead>
               <tbody>
@@ -107,6 +131,18 @@ export default function History() {
                         <span className="text-ledger-meta">0</span>
                       )}
                     </td>
+                    <td className="px-4 py-2.5">
+                      <div className="flex flex-col gap-1">
+                        <Chip tone={r.approvalStatus === 'approved' ? 'match' : r.approvalStatus === 'rejected' ? 'brk' : 'potential'} dot>
+                          {r.approvalStatus || 'pending'}
+                        </Chip>
+                        {r.approvalComment && (
+                          <span className="text-[10px] text-ledger-meta italic max-w-[150px] truncate" title={r.approvalComment}>
+                            "{r.approvalComment}"
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-4 py-2.5 text-ledger-meta">{fmtDateTime(r.startedAt)}</td>
                     <td className="px-4 py-2.5">
                       {r.status === 'success' ? (
@@ -117,6 +153,18 @@ export default function History() {
                         <span className="text-small text-ledger-meta">—</span>
                       )}
                     </td>
+                    {user?.role === 'admin' && (
+                      <td className="px-4 py-2.5">
+                        {r.approvalStatus === 'pending' || !r.approvalStatus ? (
+                          <div className="flex items-center gap-1.5">
+                            <Button size="sm" variant="outline" onClick={() => setApprovalTarget({ runId: r._id, action: 'approve' })}>Approve</Button>
+                            <Button size="sm" variant="ghost" className="!text-ledger-brk hover:!bg-[#FEF2F2]" onClick={() => setApprovalTarget({ runId: r._id, action: 'reject' })}>Reject</Button>
+                          </div>
+                        ) : (
+                          <span className="text-small text-ledger-meta">—</span>
+                        )}
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -124,6 +172,34 @@ export default function History() {
           </div>
         </Card>
       )}
+
+      <Modal open={!!approvalTarget} onClose={() => setApprovalTarget(null)} title={`Confirm ${approvalTarget?.action}`}>
+        <div className="space-y-4">
+          <p className="text-small text-ledger-meta">
+            You are about to <strong>{approvalTarget?.action}</strong> this reconciliation run.
+            Optionally, provide a comment for the investigator.
+          </p>
+          <div>
+            <label className="label">Description / Comment</label>
+            <textarea
+              className="input min-h-[100px] resize-y"
+              placeholder="E.g., Looks good, proceed with exceptions handling."
+              value={approvalComment}
+              onChange={(e) => setApprovalComment(e.target.value)}
+            />
+          </div>
+          <div className="flex justify-end gap-2 border-t border-ledger-line pt-4">
+            <Button variant="ghost" onClick={() => setApprovalTarget(null)}>Cancel</Button>
+            <Button 
+              className={approvalTarget?.action === 'reject' ? 'bg-ledger-brk hover:bg-red-700 text-white' : ''} 
+              loading={submittingApproval} 
+              onClick={handleApproval}
+            >
+              Confirm {approvalTarget?.action}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

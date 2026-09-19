@@ -202,9 +202,9 @@ export default function WorkflowNew() {
           {sources.map((s, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.15, delay: i * 0.03 }}
+              initial={{ opacity: 0, y: 15, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.4, delay: i * 0.1, ease: [0.25, 1, 0.5, 1] }}
             >
               <SourceBlock
                 index={i}

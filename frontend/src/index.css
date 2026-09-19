@@ -11,7 +11,7 @@
     @apply bg-ledger-white text-ledger-ink font-sans text-base;
   }
   ::selection {
-    background: #1d4ed8;
+    background: #00915a;
     color: #fff;
   }
   /* thin neutral scrollbars */

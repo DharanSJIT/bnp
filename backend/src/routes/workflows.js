@@ -10,6 +10,9 @@ import { BreakInvestigation } from '../models/BreakInvestigation.js';
 import { auth, roleGuard } from '../middleware/auth.js';
 import { auditFor } from '../services/auditService.js';
 import { aiCall } from '../services/aiClient.js';
+import fs from 'fs';
+import path from 'path';
+import { config } from '../config/env.js';
 
 const router = Router();
 router.use(auth);
@@ -64,6 +67,12 @@ router.get('/:id', async (req, res, next) => {
 // POST /api/workflows — register a new workflow (draft)
 router.post('/', async (req, res, next) => {
   try {
+    const kbPath = path.resolve(config.rootDir, '../chatbot/knowledge_base');
+    if (fs.existsSync(kbPath)) {
+      fs.rmSync(kbPath, { recursive: true, force: true });
+    }
+    fs.mkdirSync(kbPath, { recursive: true });
+
     const { name, period, sources } = req.body || {};
     if (!name || !String(name).trim()) return res.status(400).json({ error: 'Workflow name required' });
     if (!Array.isArray(sources) || sources.length < 2) {
@@ -172,6 +181,8 @@ router.post('/:id/run', async (req, res, next) => {
       period: workflow.period || '',
       status: 'running',
       startedAt: new Date(),
+      runBy: req.user._id,
+      approvalStatus: 'pending',
     });
     // snapshot the mapping in use for run-to-run comparison
     const fmSnapshot = await FieldMapping.findOne({ workflowId: workflow._id }).lean();

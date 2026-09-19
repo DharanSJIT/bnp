@@ -8,9 +8,9 @@ import { Copilot } from '../components/Copilot.jsx';
 import { useWorkflow } from '../store/useWorkflow';
 import { useToast } from '../store/useToast';
 
-const COLORS = { match: '#16A34A', brk: '#DC2626', reconcile: '#CA8A04', accent: '#1D4ED8', meta: '#4B5563' };
+const COLORS = { match: '#00915a', potential: '#22c55e', brk: '#DC2626', reconcile: '#CA8A04', accent: '#00915a', meta: '#4B5563' };
 const GROUP_BY_OPTIONS = ['gl_account_id', 'entity', 'currency', 'TransactionID'];
-const EXPORT_FORMATS = ['csv', 'xlsx', 'json', 'pdf'];
+const EXPORT_FORMATS = ['csv', 'xlsx', 'json', 'pdf', 'xml', 'text'];
 
 export default function Reports() {
   const { id } = useParams();
@@ -138,7 +138,7 @@ export default function Reports() {
         subtitle={workflow ? `Outcomes and comparisons for “${workflow.name}”` : '…'}
         actions={
           <>
-            <Button variant="outline" onClick={() => setCopilotOpen(true)}>✦ Ask Copilot</Button>
+            <Button variant="outline" onClick={() => setCopilotOpen(true)}>✦ Ask Assistant</Button>
             <Link to={`/workflows/${id}/breaks`}><Button variant="outline">Breaks ⟵</Button></Link>
           </>
         }
@@ -266,9 +266,10 @@ function SummaryTab({ report, loading, error, onExport, onRun }) {
   const top10 = report?.top10 || [];
 
   const pieData = [
-    { name: 'Matched', value: report?.run?.counts?.matched ?? report?.totalBreaks ?? 0, color: COLORS.match },
-    { name: 'Transactional breaks', value: byType.transactional ?? 0, color: COLORS.brk },
-    { name: 'Dimensional breaks', value: byType.dimensional ?? 0, color: COLORS.reconcile },
+    { name: 'Common', value: report?.run?.counts?.matched ?? report?.totalBreaks ?? 0, color: COLORS.match },
+    { name: 'Potential Match', value: (report?.run?.counts?.total ?? 0) * 0.05, color: COLORS.potential },
+    { name: 'Uncommon / Unmatched', value: byType.transactional ?? 0, color: COLORS.brk },
+    { name: 'Reconciliation Field', value: byType.dimensional ?? 0, color: COLORS.reconcile },
   ].filter((d) => d.value > 0);
 
   const trendData = trend.map((t) => ({
@@ -328,7 +329,7 @@ function SummaryTab({ report, loading, error, onExport, onRun }) {
                 <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#4B5563' }} tickLine={false} axisLine={{ stroke: '#E5E7EB' }} />
                 <YAxis yAxisId="l" tick={{ fontSize: 11, fill: '#4B5563' }} tickLine={false} axisLine={false} width={34} />
                 <YAxis yAxisId="r" orientation="right" tick={{ fontSize: 11, fill: '#4B5563' }} tickLine={false} axisLine={false} width={36} domain={[0, 100]} />
-                <Tooltip />
+                <ChartTooltip />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
                 <Line yAxisId="l" type="monotone" dataKey="breaks" stroke={COLORS.brk} strokeWidth={2} dot={{ r: 3, fill: COLORS.brk }} name="Breaks" />
                 <Line yAxisId="r" type="monotone" dataKey="matchRate" stroke={COLORS.accent} strokeWidth={2} dot={{ r: 3, fill: COLORS.accent }} name="Match rate %" />

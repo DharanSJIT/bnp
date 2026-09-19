@@ -89,7 +89,7 @@ router.get('/:runId/export', async (req, res, next) => {
   try {
     const run = await getRun(req, res);
     if (!run) return;
-    const format = ['csv', 'xlsx', 'json', 'pdf'].includes(req.query.format) ? req.query.format : 'xlsx';
+    const format = ['csv', 'xlsx', 'json', 'pdf', 'xml', 'text'].includes(req.query.format) ? req.query.format : 'xlsx';
     const breaks = await Break.find({ runId: run._id }).sort({ priorityScore: -1 }).lean();
     const rows = breaks.map(flatBreak);
 
@@ -234,7 +234,7 @@ router.get('/:runId/compare-export', async (req, res, next) => {
   try {
     const run = await getRun(req, res);
     if (!run) return;
-    const format = ['csv', 'xlsx', 'json', 'pdf'].includes(req.query.format) ? req.query.format : 'xlsx';
+    const format = ['csv', 'xlsx', 'json', 'pdf', 'xml', 'text'].includes(req.query.format) ? req.query.format : 'xlsx';
     const workflow = await Workflow.findById(run.workflowId);
     const body = {
       workflowId: run.workflowId.toString(),
