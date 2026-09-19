@@ -9,4 +9,5 @@ requests==2.32.3
 loguru==0.7.3
 python-dotenv==1.0.1
 flask==3.1.0
-pytest==8.3.4groq==0.11.0
+pytest==8.3.4
+groq==0.11.0
