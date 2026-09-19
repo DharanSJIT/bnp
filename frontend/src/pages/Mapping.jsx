@@ -396,6 +396,11 @@ export default function Mapping() {
       const fb = unassignedField(kB);
       if (!fa || !fb) return;
       const conf = newGroupConfidence(nameA, nameB);
+      if (conf < 0.75) {
+        toast.error('These fields are uncommon. Please upload a Mapping file (Join Map) to link them.');
+        setSelected(null);
+        return;
+      }
       const bothNumeric = fieldMeta.get(kA)?.dtype === 'numeric' && fieldMeta.get(kB)?.dtype === 'numeric';
       const isReconcile =
         bothNumeric && AMOUNT_NAMES.some((n) => nameA.toLowerCase().includes(n) || nameB.toLowerCase().includes(n));
@@ -405,7 +410,7 @@ export default function Mapping() {
           { sourceId: srcA, fieldName: nameA },
           { sourceId: srcB, fieldName: nameB },
         ],
-        status: conf >= 0.9 ? 'common' : 'potential',
+        status: conf >= 0.95 ? 'common' : 'potential',
         confidence: conf,
         isReconcileField: isReconcile,
         suggestedReconcileField: isReconcile,

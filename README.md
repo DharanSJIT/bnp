@@ -2,7 +2,7 @@
 
 Configurable **workflow orchestration** for reconciling heterogeneous finance systems (GL / MA / FA / RR) at transaction and aggregate level, with AI-assisted mapping, root-cause generation, maker-checker governance and audit-ready exports.
 
-Built for the BNP Paribas "OneRecon" hackathon (UC-3). Phases **1–4 demo-solid** per the SRS; the verified API contract driving the frontend is `docs/api-contract.md`.
+Built for the BNP Paribas "OneRecon" hackathon (UC-3). The full SRS flow is implemented end-to-end (register → ingest → validate → map → reconcile → maker-checker → reports → history), featuring a hardcoded main admin, admin-managed lower-authority user creation, self-registration, and global processing history with downloadable exports. The verified API contract driving the frontend is `docs/api-contract.md`.
 
 ```
 ┌────────────────────────┐        ┌──────────────────────────────┐
@@ -29,7 +29,7 @@ Built for the BNP Paribas "OneRecon" hackathon (UC-3). Phases **1–4 demo-solid
 | Frontend | React 18 + Vite, Tailwind CSS, Framer Motion, Zustand, Recharts, react-dropzone, React Router |
 | Backend API | Node 20+ / Express, JWT + bcryptjs, Mongoose, exceljs/pdfkit/json2csv |
 | AI/data service | Python 3.11+ / FastAPI, pandas, scikit-learn (IsolationForest), rapidfuzz, pymongo |
-| Database | MongoDB (local by default; swap `MONGO_URI` in `backend/.env` for Atlas) |
+| Database | MongoDB (local by default — inspect with **MongoDB Compass** at `mongodb://127.0.0.1:27017/onerecon`; swap `MONGO_URI` in `backend/.env` for Atlas) |
 | External data | MA REST API (paginated, `Amount` string→float), GL XML, FA CSV, monthly join maps |
 
 No external AI API keys are required — the explainer, mapper, validation, and copilot are deterministic/offline-safe.
@@ -57,7 +57,7 @@ python ai-service/.venv/bin/python scripts/start_ma_server.py \
 cd backend
 npm install
 cp .env.example .env          # defaults point at local Mongo / ports already set
-node scripts/seedUsers.js     # seed admin/investigator/approver
+node scripts/seedUsers.js     # seed the main admin + 7 bank roles (idempotent)
 npm run dev
 
 # 5. Frontend (port 5173)
@@ -66,15 +66,24 @@ npm install
 npm run dev
 ```
 
-Open **http://127.0.0.1:5173** and log in:
+Open **http://127.0.0.1:5173** and log in (or click a demo credential chip on the login page):
 
 | Role | Email | Password |
 |---|---|---|
-| Investigator | investigator@onerecon.io | Invest@123 |
+| Admin (system administrator) | admin@onerecon.io | Admin@123 |
+| General Manager | gm@onerecon.io | Manager@123 |
+| Operations Manager | manager@onerecon.io | Manager@123 |
 | Approver | approver@onerecon.io | Approver@123 |
-| Admin | admin@onerecon.io | Admin@123 |
+| Investigator | investigator@onerecon.io | Invest@123 |
+| Reconciliation Monitor | monitor@onerecon.io | Monitor@123 |
+| Chief Accountant | accountant@onerecon.io | Account@123 |
+| Cashier | cashier@onerecon.io | Cashier@123 |
+
+> Any user can also **self-register** (Register page) and pick their role from the lower-authority set; the **admin** role can only be assigned by the system (a self-registration attempt under "admin" safely falls back to `investigator`).
 
 > One-command alternative: `bash scripts/dev_all.sh` starts Mongo (if needed), the MA server (august by default), AI service, backend and frontend.
+
+> Data lives in `.mongo-data` and is visible in **MongoDB Compass** at `localhost:27017`. If you prefer MongoDB Atlas, uncomment/set `MONGO_URI` in `backend/.env` **and** `ONERECON_MONGO_URI` in `ai-service/.env` to the same Atlas connection string, and whitelist this machine's IP in Atlas (Network Access) — both services must target the same database.
 
 ## Preload a populated demo workflow (optional but recommended)
 
@@ -89,7 +98,7 @@ breaks with root causes) — ready to open in the UI immediately.
 
 ## End-to-end flow
 
-1. **Login** → JWT + role badge.
+1. **Landing / Login / Register** → JWT + role badge; self-registration available for all lower authorities; the landing page links through to the app.
 2. **Register workflow** → name, period (e.g. `202608`), ≥2 sources (file / REST API / db-beta).
 3. **Ingest** → upload GL XML + FA CSV; configure & Test the MA REST connector; "Ingest All Pages" pulls 45 pages / 22k rows.
 4. **AI validation gate** → per-source nulls/outliers/rule violations (from `business_rules.txt`, interpreted dynamically — R01–R10 active, R11–R25 placeholders skipped) + schema drift vs previous load; click **Go-Ahead** to proceed.
@@ -98,6 +107,7 @@ breaks with root causes) — ready to open in the UI immediately.
 7. **Breaks & Maker–Checker** → priority-scored break list; AI root-cause with evidence; investigator submits cause → pending-approval; approver approves/rejects (single, bulk, or CSV upload); Copilot answers grounded questions per break.
 8. **Reports & Compare** → donut/trend/top-10, CSV/XLSX/JSON/PDF exports, **Comparison module**: cross-system (e.g. FA vs RR-style GL-vs-FA by `gl_account_id`, grand totals + variance banner) and run-to-run (match-rate/break deltas, newly appeared/resolved breaks, mapping diff).
 9. **Audit trail** → every state change (ingest, mapping override, validation acknowledgment, run start/finish, decisions, exports, logins) is immutable and filterable.
+10. **History** → every processed workflow & run ever performed (global), with match rate, break counts and one-click downloads of the exports — visible to every signed-in user.
 
 ## Dataset notes
 

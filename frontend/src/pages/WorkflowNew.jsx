@@ -73,6 +73,17 @@ function SourceBlock({ index, source, onChange, onRemove, canRemove }) {
             />
           </div>
         )}
+        {source.ingestionType === 'file' && (
+          <div className="sm:col-span-2">
+            <label className="label">Upload Document (Optional)</label>
+            <input
+              type="file"
+              className="input"
+              accept=".csv,.xlsx,.xls,.json,.xml,.txt"
+              onChange={(e) => onChange({ ...source, file: e.target.files[0] || null })}
+            />
+          </div>
+        )}
         {source.ingestionType === 'db' && (
           <p className="text-small text-ledger-meta sm:col-span-2">
             Database ingestion is in <Chip tone="reconcile">beta</Chip> — this source panel will be disabled on the ingest screen.
@@ -89,8 +100,8 @@ export default function WorkflowNew() {
   const [name, setName] = useState('');
   const [period, setPeriod] = useState('');
   const [sources, setSources] = useState([
-    { sourceId: 'SRC1', displayName: '', ingestionType: 'file', config: {} },
-    { sourceId: 'SRC2', displayName: '', ingestionType: 'file', config: {} },
+    { sourceId: 'SRC1', displayName: '', ingestionType: 'file', config: {}, file: null },
+    { sourceId: 'SRC2', displayName: '', ingestionType: 'file', config: {}, file: null },
   ]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -98,7 +109,7 @@ export default function WorkflowNew() {
   const addSource = () =>
     setSources((s) => [
       ...s,
-      { sourceId: `SRC${s.length + 1}`, displayName: '', ingestionType: 'file', config: {} },
+      { sourceId: `SRC${s.length + 1}`, displayName: '', ingestionType: 'file', config: {}, file: null },
     ]);
 
   const updateSource = (i, val) =>
@@ -125,8 +136,28 @@ export default function WorkflowNew() {
           config: s.config || {},
         })),
       });
-      toast.success(`Workflow “${data.workflow.name}” created`);
-      navigate(`/workflows/${data.workflow._id}/ingest`);
+
+      const workflowId = data.workflow._id;
+      let uploadCount = 0;
+
+      // Upload files for each file source
+      for (const [i, s] of sources.entries()) {
+        if (s.ingestionType === 'file' && s.file) {
+          const sourceId = slugId(s.displayName, i + 1);
+          const fd = new FormData();
+          fd.append('file', s.file);
+          try {
+            await api.post(`/workflows/${workflowId}/sources/${sourceId}/upload`, fd);
+            toast.success(`Uploaded ${s.file.name} for ${s.displayName}`);
+            uploadCount++;
+          } catch (uploadErr) {
+            toast.error(errMsg(uploadErr, `Failed to upload ${s.file.name}`));
+          }
+        }
+      }
+
+      toast.success(`Workflow “${data.workflow.name}” created${uploadCount > 0 ? ` with ${uploadCount} files` : ''}`);
+      navigate(`/workflows/${workflowId}/ingest`);
     } catch (err) {
       setError(errMsg(err, 'Could not create workflow'));
     } finally {

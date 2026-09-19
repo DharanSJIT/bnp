@@ -49,7 +49,7 @@ router.post('/:breakId/investigate', async (req, res, next) => {
     const before = { status: b.status, aiRootCause: b.aiRootCause };
     let investigation = await BreakInvestigation.findOne({ breakId: b._id, decision: null });
     if (!investigation) {
-      investigation = await BreakInvestigation.create({ breakId: b._id, investigatorId: req.user._id });
+      investigation = await BreakInvestigation.create({ breakId: b._id, investigatorId: req.user._id, cause: String(cause).trim() });
     }
     investigation.investigatorId = req.user._id;
     investigation.cause = String(cause).trim();
