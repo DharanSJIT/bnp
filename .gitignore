@@ -24,3 +24,8 @@ dist/
 
 # OS
 .DS_Store
+.npm-cache/
+.tools/
+node_modules/
+.env
+.env.*
