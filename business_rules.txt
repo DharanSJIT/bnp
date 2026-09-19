@@ -1,0 +1,25 @@
+R01|TransactionID|REGEX|^[A-F0-9]{16}$$|TransactionID must be 16‑char hex
+R02|AccountID|REGEX|^ACC\d{4}$$|AccountID must start with ACC followed by 4 digits
+R03|TransactionDate|DATE|%Y-%m-%d|Date must be ISO‑8601 (YYYY‑MM‑DD)
+R04|Amount|RANGE|0,100000|Amount must be between 0 and 100 000
+R05|Currency|LOOKUP|USD,EUR,GBP,INR,JPY,CAD,CHF,AUD|Currency must be a supported ISO‑code
+R06|Country|LOOKUP|US,GB,DE,FR,IN,JP,CH,AU,CA,SG,HK|Country must be a valid ISO 3166‑1 alpha‑2 code
+R07|Description|REGEX|^.{5,255}$$|Description length 5‑255 chars
+R08|FILE_PAIR|INGEST|ANY,ANY|Engine can ingest any two files (columns may differ).
+R09|KEY_SPEC|DEFINE|GL:gl_account_id;MA:ma_customer_key;FA:fa_key|User may specify which column is the key for each file; a join‑map can be used to link them.
+R10|AGGREGATE|SUM|KEYS=gl_account_id|Aggregate Amount per key across the three reports.
+R11|DummyField1|REGEX|^.*$$|Placeholder rule #1
+R12|DummyField2|REGEX|^.*$$|Placeholder rule #2
+R13|DummyField3|REGEX|^.*$$|Placeholder rule #3
+R14|DummyField4|REGEX|^.*$$|Placeholder rule #4
+R15|DummyField5|REGEX|^.*$$|Placeholder rule #5
+R16|DummyField6|REGEX|^.*$$|Placeholder rule #6
+R17|DummyField7|REGEX|^.*$$|Placeholder rule #7
+R18|DummyField8|REGEX|^.*$$|Placeholder rule #8
+R19|DummyField9|REGEX|^.*$$|Placeholder rule #9
+R20|DummyField10|REGEX|^.*$$|Placeholder rule #10
+R21|DummyField11|REGEX|^.*$$|Placeholder rule #11
+R22|DummyField12|REGEX|^.*$$|Placeholder rule #12
+R23|DummyField13|REGEX|^.*$$|Placeholder rule #13
+R24|DummyField14|REGEX|^.*$$|Placeholder rule #14
+R25|DummyField15|REGEX|^.*$$|Placeholder rule #15

@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-ledger-white text-ledger-ink font-sans text-base;
+  }
+  ::selection {
+    background: #1d4ed8;
+    color: #fff;
+  }
+  /* thin neutral scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db transparent;
+  }
+  *::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-ledger-panel border border-ledger-line rounded-panel;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg font-medium text-base leading-none
+      transition-colors select-none cursor-pointer disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply bg-ledger-accent text-white hover:bg-ledger-accentHover disabled:bg-ledger-accentDisabled;
+  }
+  .btn-outline {
+    @apply bg-transparent text-ledger-ink border border-ledger-line hover:border-ledger-accent hover:text-ledger-accent;
+  }
+  .btn-ghost {
+    @apply bg-transparent text-ledger-meta hover:text-ledger-ink hover:bg-ledger-skeleton;
+  }
+  .btn-danger {
+    @apply bg-ledger-brk text-white hover:bg-[#B91C1C];
+  }
+  .input {
+    @apply w-full rounded-lg border border-ledger-line bg-white px-3 py-2 text-base text-ledger-ink
+      placeholder:text-ledger-meta/70 focus:outline-none focus:ring-2 focus:ring-ledger-accent focus:border-ledger-accent;
+  }
+  .label {
+    @apply block text-small font-medium text-ledger-meta mb-1.5;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-small font-medium;
+  }
+  .field-id {
+    @apply font-mono text-table;
+  }
+}
+
+/* skeleton pulse */
+@keyframes sk-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+.skeleton {
+  @apply bg-ledger-skeleton rounded;
+  animation: sk-pulse 1.4s ease-in-out infinite;
+}
+
+/* shrinking toast underline */
+@keyframes toast-shrink {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+.toast-underline {
+  animation: toast-shrink linear forwards;
+}
+
+/* table sticky header safety */
+.th-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}

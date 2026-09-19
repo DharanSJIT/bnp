@@ -1,0 +1,26 @@
+# deps
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# env & secrets
+.env
+.env.local
+
+# runtime data
+.mongo-data/
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/exports/*
+!backend/exports/.gitkeep
+ai-service/data/*
+!ai-service/data/.gitkeep
+
+# build output
+frontend/dist/
+dist/
+
+# OS
+.DS_Store

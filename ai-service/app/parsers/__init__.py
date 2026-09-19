@@ -1,0 +1,1 @@
+"""Format parsers: CSV / XLSX / JSON / XML + the paginated REST connector."""
