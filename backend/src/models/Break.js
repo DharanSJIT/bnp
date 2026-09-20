@@ -5,7 +5,7 @@ const breakSchema = new mongoose.Schema(
     runId: { type: mongoose.Schema.Types.ObjectId, ref: 'ReconciliationRun', required: true },
     workflowId: { type: mongoose.Schema.Types.ObjectId, ref: 'Workflow', required: true },
     period: { type: String, default: '' },
-    type: { type: String, enum: ['transactional', 'dimensional'], required: true },
+    type: { type: String, enum: ['transactional', 'dimensional', 'anomaly'], required: true },
     key: { type: String, required: true }, // TransactionID or canonical account key
     dimension: { type: String, default: '' }, // e.g. gl_account_id for dimensional breaks
     sourcesInvolved: { type: [String], default: [] },

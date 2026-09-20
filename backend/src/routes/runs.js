@@ -46,7 +46,7 @@ router.get('/', async (req, res, next) => {
           : null,
         reportCount: reportMap[r._id.toString()]?.count || 0,
         reportFormats: reportMap[r._id.toString()]?.formats || [],
-        openBreakCount: await Break.countDocuments({ runId: r._id, status: { $in: ['open', 'investigating', 'pending-approval'] } }),
+        openBreakCount: await Break.countDocuments({ runId: r._id, type: { $ne: 'anomaly' }, status: { $in: ['open', 'investigating', 'pending-approval'] } }),
       }))
     );
     res.json({ runs });
@@ -140,9 +140,10 @@ router.get('/analytics', async (req, res, next) => {
     const current = months[months.length - 1];
     const previous = months[months.length - 2];
 
-    // 4. Break-ledger state for the runs in scope.
+    // 4. Break-ledger state for the runs in scope. AI anomaly flags are
+    // advisory outliers, not breaks — they are excluded from every break KPI.
     const runIds = runs.map((r) => r._id);
-    const breakRunFilter = { runId: { $in: runIds } };
+    const breakRunFilter = { runId: { $in: runIds }, type: { $ne: 'anomaly' } };
     const openBreakFilter = { ...breakRunFilter, status: { $in: ['open', 'investigating', 'pending-approval'] } };
     const [totalBreakDocs, openBreakDocs] = await Promise.all([
       Break.countDocuments(breakRunFilter),
@@ -219,8 +220,8 @@ router.get('/:runId', async (req, res, next) => {
   try {
     const run = await getRun(req, res);
     if (!run) return;
-    const breaks = await Break.countDocuments({ runId: run._id });
-    const openBreaks = await Break.countDocuments({ runId: run._id, status: { $in: ['open', 'investigating', 'pending-approval'] } });
+    const breaks = await Break.countDocuments({ runId: run._id, type: { $ne: 'anomaly' } });
+    const openBreaks = await Break.countDocuments({ runId: run._id, type: { $ne: 'anomaly' }, status: { $in: ['open', 'investigating', 'pending-approval'] } });
     res.json({ run, counts: { ...run.counts, openBreaks }, breakCountTotal: breaks });
   } catch (err) {
     next(err);

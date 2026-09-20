@@ -279,6 +279,7 @@ function SummaryTab({ report, loading, error, onExport, onEmail, onRun }) {
     { name: 'Potential Match', value: (report?.run?.counts?.total ?? 0) * 0.05, color: COLORS.potential },
     { name: 'Uncommon / Unmatched', value: byType.transactional ?? 0, color: COLORS.brk },
     { name: 'Reconciliation Field', value: byType.dimensional ?? 0, color: COLORS.reconcile },
+    { name: 'AI anomaly flags (advisory)', value: byType.anomaly ?? 0, color: COLORS.meta },
   ].filter((d) => d.value > 0);
 
   const trendData = trend.map((t) => ({

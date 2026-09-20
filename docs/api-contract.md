@@ -27,7 +27,7 @@ Base URL: `http://127.0.0.1:4000` (proxy `/api` in dev). JWT via `Authorization:
 - `POST /api/workflows` body `{name, period, sources: [{sourceId, displayName, ingestionType, config}]}` (≥2 sources) → `{ workflow }` (409 if name duplicated per user).
 - `PUT /api/workflows/:id` body `{name?, period?, status?, sources?, outboundConfig?}` → `{ workflow }`.
 - `DELETE /api/workflows/:id` → `{ ok: true }`.
-- `POST /api/workflows/:id/run` → waits for reconcile, returns `{ run: {_id, status:'success'|'failed', matchRate, counts: {bySource, matched, breaks, anomalies, openBreaks}, totals, error?}, summary: {transactionalBreaks, presenceBreaks, valueBreaks, dimensionalBreaks, anomalyFlags, note} }`. Can be slow (~5–20s).
+- `POST /api/workflows/:id/run` → waits for reconcile, returns `{ run: {_id, status:'success'|'failed', matchRate, counts: {bySource, matched, breaks, anomalies, coverageGaps, unmappedRows, totalTransactions}, totals, error?}, summary: {transactionalBreaks, presenceBreaks, valueBreaks, dimensionalBreaks, anomalyFlags, coverageGaps, unmappedRows, note} }`. `counts.breaks` counts **data breaks only** — AI anomaly flags (`counts.anomalies`) and join-map coverage gaps (`counts.coverageGaps` / `counts.unmappedRows`) are advisory and never inflate the break count, so a 100% match rate always reports 0 breaks. Anomalies are only computed when the run has genuine data breaks, so uploading the **same file to every source reports 0 anomalies** as well. Can be slow (~5–20s).
 
 ### Ingestion (per source)
 - `POST /api/workflows/:id/sources/:sourceId/upload` — multipart, field name `file`. → `{ source, loadId, recordsLoaded, columns: [..], sample: [row...], timeTakenMs, parseStats }`.

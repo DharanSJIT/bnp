@@ -20,7 +20,6 @@ from ..anomaly import detector
 from ..rootcause import explainer
 
 TOLERANCE_DEFAULT = 0.0
-MAX_ANOMALIES = 60
 
 
 # ---------- stage 1/2: load + normalize ----------
@@ -239,6 +238,7 @@ def dimensional_match(loads, order, join_index, tolerance, period):
             "status": "open",
             "evidence": {
                 "unmapped_dimensional": {"count": sum(u["count"] for u in unmapped.values()), "top_keys": top_keys},
+                "join_map_coverage": True,
                 "period": period,
             },
         }
@@ -248,11 +248,16 @@ def dimensional_match(loads, order, join_index, tolerance, period):
 # ---------- stage 5/7: score + root cause ----------
 
 def _historical_runs(workflow_id, key):
-    """Distinct prior runs (different from current) that broke the same key."""
+    """Distinct prior runs (different from current) that broke the same key.
+
+    AI anomaly flags are advisory outliers, not data breaks, so they never
+    count toward historical frequency (otherwise every flagged transaction
+    inflates its own priority score).
+    """
     try:
         runs = db.coll("breaks").distinct(
             "runId",
-            {"workflowId": ObjectId(workflow_id), "key": key},
+            {"workflowId": ObjectId(workflow_id), "key": key, "type": {"$ne": "anomaly"}},
         )
         return len(runs)
     except Exception:  # noqa: BLE001
@@ -295,8 +300,12 @@ def anomaly_breaks(loads, order, period):
         results = detector.scan_source(rows)
         for res in results:
             flagged.append({
-                "type": "transactional",
+                # Anomaly flags are AI outlier *suggestions*, never data
+                # mismatches — they get their own type so they are excluded
+                # from break counts and open-break KPIs.
+                "type": "anomaly",
                 "key": res["key"] or f"{sid}-row{res['rowIndex']}",
+                "dimension": "anomaly_flag",
                 "sourcesInvolved": [sid],
                 "expected": round(res["value"], 2),
                 "actual": round(res["value"], 2),
@@ -346,7 +355,10 @@ def persist(run_id, workflow_id, run_doc_patch, breaks):
 
 # ---------- main ----------
 
-def reconcile(workflow_id, run_id, period, tolerance=None, max_anomalies=60):
+def reconcile(workflow_id, run_id, period, tolerance=None, max_anomalies=None):
+    # max_anomalies=None → the detector derives a per-source allowance from
+    # each file's row count (~1% of rows), so anomaly counts vary with the
+    # data instead of always hitting a constant cap.
     detector.MAX_ANOMALIES_PER_SOURCE = max_anomalies
     wf = db.coll("workflows").find_one({"_id": ObjectId(workflow_id)})
     if not wf:
@@ -363,7 +375,17 @@ def reconcile(workflow_id, run_id, period, tolerance=None, max_anomalies=60):
 
     tx_breaks, matched, total_txns = transactional_match(loads, order, tol, period)
     dim_breaks, dim_break, per_source_sums = dimensional_match(loads, order, join_index, tol, period)
-    anomalies = anomaly_breaks(loads, order, period)
+
+    # The anomaly layer is scoped to runs that actually have data breaks. When
+    # every transaction matches across all sources (e.g. the same file is
+    # uploaded everywhere → 100% match), there is no mismatch to explain, so
+    # the anomaly count is 0 instead of flagging large-but-agreed transactions.
+    # The (unmapped) join-map coverage note is a config issue, not a mismatch,
+    # so it does not enable the anomaly layer either.
+    if tx_breaks or dim_breaks:
+        anomalies = anomaly_breaks(loads, order, period)
+    else:
+        anomalies = []
 
     all_breaks = tx_breaks + dim_breaks + ([dim_break] if dim_break else []) + anomalies
 
@@ -376,11 +398,29 @@ def reconcile(workflow_id, run_id, period, tolerance=None, max_anomalies=60):
     total_union = total_txns
     match_rate = round(matched / total_union, 6) if total_union else 0.0
 
+    # Split the ledger into *genuine data breaks* and advisory layers so the
+    # headline numbers are always consistent with the match rate:
+    #   - anomaly flags   : statistical outliers — only computed when the run
+    #                       has data breaks, so a perfect match reports 0
+    #   - (unmapped)      : join-map coverage gap — no aggregate comparison
+    #                       was even possible, so it is not a data mismatch
+    anomalies_count = len(anomalies)
+    coverage_gaps = 1 if dim_break else 0
+    unmapped_rows = (
+        dim_break["evidence"]["unmapped_dimensional"]["count"] if dim_break else 0
+    )
+    data_breaks = [
+        b for b in all_breaks
+        if b["type"] != "anomaly" and not b.get("evidence", {}).get("join_map_coverage")
+    ]
+
     counts = {
         "bySource": {sid: len(loads.get(sid, [])) for sid in order},
         "matched": matched,
-        "breaks": break_count,
-        "anomalies": len(anomalies),
+        "breaks": len(data_breaks),
+        "anomalies": anomalies_count,
+        "coverageGaps": coverage_gaps,
+        "unmappedRows": unmapped_rows,
         "totalTransactions": total_union,
     }
     totals = {
@@ -395,7 +435,8 @@ def reconcile(workflow_id, run_id, period, tolerance=None, max_anomalies=60):
         "aiMetrics": {
             "transactionalBreaks": len(tx_breaks),
             "dimensionalBreaks": len(dim_breaks) + (1 if dim_break else 0),
-            "anomalyFlags": len(anomalies),
+            "anomalyFlags": anomalies_count,
+            "coverageGaps": coverage_gaps,
         },
         "updatedAt": datetime.datetime.utcnow(),
     }
@@ -415,8 +456,10 @@ def reconcile(workflow_id, run_id, period, tolerance=None, max_anomalies=60):
             "presenceBreaks": len([b for b in tx_breaks if b["evidence"].get("missing_sources")]),
             "valueBreaks": len([b for b in tx_breaks if b["evidence"].get("value_diff_sources")]),
             "dimensionalBreaks": len(dim_breaks) + (1 if dim_break else 0),
-            "anomalyFlags": len(anomalies),
-            "note": "Anomaly flags are AI suggestions layered on top of deterministic checks.",
+            "anomalyFlags": anomalies_count,
+            "coverageGaps": coverage_gaps,
+            "unmappedRows": unmapped_rows,
+            "note": "Anomaly flags and join-map coverage gaps are advisory and excluded from the break count.",
         },
         "topBreaks": all_breaks[:20],
     }

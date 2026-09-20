@@ -1,15 +1,29 @@
 """Statistical anomaly detection beyond hard rule checks.
 
 IsolationForest on numeric columns per source, with z-score fallback for small
-samples. Output is capped (top N by deviation) so anomaly flags stay a
-reviewable layer rather than flooding the break list.
+samples. The per-source allowance is data-relative (≈ contamination × rows,
+bounded to a reviewable range) unless an explicit limit is set, so the anomaly
+count reflects the actual outlier volume of each file instead of a constant.
 """
+import math
+
 import numpy as np
 
-MAX_ANOMALIES_PER_SOURCE = 60
+# None → derive the allowance from each source's row count.
+MAX_ANOMALIES_PER_SOURCE = None
+
+# Advisory layer bounds: never fabricate flags when few exist, never flood the
+# ledger when a file is huge. Within these bounds the count tracks the data.
+ALLOWANCE_MIN = 50
+ALLOWANCE_MAX = 300
 
 
-def scan_source(rows, numeric_cols=("Amount",), contamination=0.01):
+def _allowance(row_count, contamination):
+    expected = math.ceil(contamination * max(row_count, 0))
+    return min(max(expected, ALLOWANCE_MIN), ALLOWANCE_MAX)
+
+
+def scan_source(rows, numeric_cols=("Amount",), contamination=0.01, limit=None):
     """rows: list of {column: value} dicts. Returns list of anomaly dicts."""
     if not rows or not numeric_cols:
         return []
@@ -67,4 +81,7 @@ def scan_source(rows, numeric_cols=("Amount",), contamination=0.01):
                 "column": numeric_cols[0],
             })
     anomalies.sort(key=lambda a: a["deviationScore"], reverse=True)
-    return anomalies[:MAX_ANOMALIES_PER_SOURCE]
+    cap = limit if limit is not None else MAX_ANOMALIES_PER_SOURCE
+    if cap is None:
+        cap = _allowance(len(rows), contamination)
+    return anomalies[:cap]

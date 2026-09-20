@@ -19,6 +19,25 @@ router.use(auth);
 const REPORT_FORMATS = ['csv', 'xlsx', 'json', 'pdf', 'xml', 'text'];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// AI anomaly flags are advisory outliers, not data breaks. All "break" KPIs
+// must exclude them so a 100% match rate never coexists with inflated break
+// counts; anomalies are surfaced separately (counts.anomalies / type 'anomaly').
+const NOT_ANOMALY = { type: { $ne: 'anomaly' } };
+
+// Partition a run's ledger into genuine data breaks vs AI anomaly flags.
+function ledgerPartition(breaks) {
+  const breaksRows = [];
+  const anomalyRows = [];
+  for (const b of breaks) {
+    // (unmapped) join-map coverage notes are surfaced via counts.coverageGaps,
+    // not counted as data breaks.
+    if (b.type === 'anomaly') anomalyRows.push(flatBreak(b));
+    else if (b.key === '(unmapped)' || b.evidence?.join_map_coverage) continue;
+    else breaksRows.push(flatBreak(b));
+  }
+  return { breaksRows, anomalyRows };
+}
+
 async function getRun(req, res) {
   const run = await ReconciliationRun.findById(req.params.runId);
   if (!run) return res.status(404).json({ error: 'Run not found' });
@@ -44,11 +63,11 @@ router.get('/:runId', async (req, res, next) => {
     const run = await getRun(req, res);
     if (!run) return;
     const [breaks, byType, byStatus, priorRuns, top10] = await Promise.all([
-      Break.find({ runId: run._id }).sort({ priorityScore: -1 }).limit(500).lean(),
+      Break.find({ runId: run._id, ...NOT_ANOMALY }).sort({ priorityScore: -1 }).limit(500).lean(),
       Break.aggregate([{ $match: { runId: run._id } }, { $group: { _id: '$type', count: { $sum: 1 } } }]),
-      Break.aggregate([{ $match: { runId: run._id } }, { $group: { _id: '$status', count: { $sum: 1 } } }]),
+      Break.aggregate([{ $match: { runId: run._id, ...NOT_ANOMALY } }, { $group: { _id: '$status', count: { $sum: 1 } } }]),
       ReconciliationRun.find({ workflowId: run.workflowId, status: 'success' }).sort({ startedAt: -1 }).limit(12).lean(),
-      Break.find({ runId: run._id }).sort({ materiality: -1 }).limit(10).lean(),
+      Break.find({ runId: run._id, ...NOT_ANOMALY }).sort({ materiality: -1 }).limit(10).lean(),
     ]);
     const trend = await Promise.all(
       priorRuns.map(async (r) => ({
@@ -56,12 +75,13 @@ router.get('/:runId', async (req, res, next) => {
         startedAt: r.startedAt,
         status: r.status,
         matchRate: r.matchRate,
-        breaks: await Break.countDocuments({ runId: r._id }),
+        breaks: await Break.countDocuments({ runId: r._id, ...NOT_ANOMALY }),
       }))
     );
     res.json({
       run,
       totalBreaks: breaks.length,
+      anomalyCount: byType.find((s) => s._id === 'anomaly')?.count || 0,
       byType: Object.fromEntries(byType.map((s) => [s._id, s.count])),
       byStatus: Object.fromEntries(byStatus.map((s) => [s._id, s.count])),
       trend,
@@ -103,24 +123,30 @@ async function resolveReportRecipients(workflow, run) {
 // Reused by the manual "email report" endpoint and by auto-delivery after a run completes.
 export async function deliverReportByEmail({ req, run, workflow, to, format = 'xlsx', subject, message }) {
   const breaks = await Break.find({ runId: run._id }).sort({ priorityScore: -1 }).lean();
-  const rows = breaks.map(flatBreak);
+  const { breaksRows, anomalyRows } = ledgerPartition(breaks);
+  const counts = run.counts || {};
   const meta = {
     runId: run._id.toString(),
     workflowId: run.workflowId.toString(),
     period: run.period,
     status: run.status,
     matchRate: `${(run.matchRate * 100).toFixed(2)}%`,
-    counts: run.counts,
+    matched: counts.matched,
+    breaks: counts.breaks,
+    anomalies: counts.anomalies,
+    coverageGaps: counts.coverageGaps ?? 0,
+    unmappedRows: counts.unmappedRows ?? 0,
+    counts,
     totals: run.totals,
-    notes: 'Final decisions rest with authorized personnel.',
+    notes: 'Anomaly flags and join-map coverage gaps are advisory and excluded from the break count. Final decisions rest with authorized personnel.',
   };
   const filePath = await exportData({
     format,
     fileName: `run_${run._id}_break_report`,
     title: `OneRecon Break Report — Run ${run._id} (period ${run.period || 'n/a'})`,
     meta,
-    rows,
-    sheets: format === 'xlsx' ? { BreakSummary: rows } : undefined,
+    rows: breaksRows,
+    sheets: format === 'xlsx' ? { BreakSummary: breaksRows, AnomalyFlags: anomalyRows } : undefined,
   });
   const fileName = filePath.split('/').pop();
   const info = await sendReportEmail({
@@ -137,7 +163,7 @@ export async function deliverReportByEmail({ req, run, workflow, to, format = 'x
     format,
     fileName,
     filePath,
-    meta: { delivery: 'email', sentTo: to, messageId: info?.messageId || '', count: rows.length },
+    meta: { delivery: 'email', sentTo: to, messageId: info?.messageId || '', count: breaksRows.length },
   });
   await auditFor(req)({
     workflowId: run.workflowId,
@@ -224,7 +250,8 @@ router.get('/:runId/export', async (req, res, next) => {
     if (!run) return;
     const format = ['csv', 'xlsx', 'json', 'pdf', 'xml', 'text'].includes(req.query.format) ? req.query.format : 'xlsx';
     const breaks = await Break.find({ runId: run._id }).sort({ priorityScore: -1 }).lean();
-    const rows = breaks.map(flatBreak);
+    const { breaksRows, anomalyRows } = ledgerPartition(breaks);
+    const counts = run.counts || {};
 
     const meta = {
       runId: run._id.toString(),
@@ -232,9 +259,14 @@ router.get('/:runId/export', async (req, res, next) => {
       period: run.period,
       status: run.status,
       matchRate: `${(run.matchRate * 100).toFixed(2)}%`,
-      counts: run.counts,
+      matched: counts.matched,
+      breaks: counts.breaks,
+      anomalies: counts.anomalies,
+      coverageGaps: counts.coverageGaps ?? 0,
+      unmappedRows: counts.unmappedRows ?? 0,
+      counts,
       totals: run.totals,
-      notes: 'Final decisions rest with authorized personnel.',
+      notes: 'Anomaly flags and join-map coverage gaps are advisory and excluded from the break count. Final decisions rest with authorized personnel.',
     };
 
     const filePath = await exportData({
@@ -242,8 +274,8 @@ router.get('/:runId/export', async (req, res, next) => {
       fileName: `run_${run._id}_break_report`,
       title: `OneRecon Break Report — Run ${run._id} (period ${run.period || 'n/a'})`,
       meta,
-      rows,
-      sheets: format === 'xlsx' ? { BreakSummary: rows } : undefined,
+      rows: breaksRows,
+      sheets: format === 'xlsx' ? { BreakSummary: breaksRows, AnomalyFlags: anomalyRows } : undefined,
     });
 
     const report = await Report.create({
@@ -253,9 +285,9 @@ router.get('/:runId/export', async (req, res, next) => {
       format,
       fileName: filePath.split('/').pop(),
       filePath,
-      meta: { count: rows.length },
+      meta: { count: breaksRows.length },
     });
-    await auditFor(req)({ workflowId: run.workflowId, action: 'report.exported', entity: 'report', entityId: report._id.toString(), after: { format, count: rows.length } });
+    await auditFor(req)({ workflowId: run.workflowId, action: 'report.exported', entity: 'report', entityId: report._id.toString(), after: { format, count: breaksRows.length } });
     res.download(filePath);
   } catch (err) {
     next(err);
@@ -272,7 +304,7 @@ router.post('/compare', async (req, res, next) => {
     if (mode === 'run-to-run') {
       const [runA, runB] = await Promise.all([ReconciliationRun.findById(a.runId), ReconciliationRun.findById(b.runId)]);
       if (!runA || !runB) return res.status(404).json({ error: 'One of the runs was not found' });
-      const [breaksA, breaksB] = await Promise.all([Break.find({ runId: runA._id }).lean(), Break.find({ runId: runB._id }).lean()]);
+      const [breaksA, breaksB] = await Promise.all([Break.find({ runId: runA._id, ...NOT_ANOMALY }).lean(), Break.find({ runId: runB._id, ...NOT_ANOMALY }).lean()]);
       const keysA = new Set(breaksA.map((x) => x.key));
       const keysB = new Set(breaksB.map((x) => x.key));
       const newlyAppeared = breaksB.filter((x) => !keysA.has(x.key));
@@ -280,8 +312,8 @@ router.post('/compare', async (req, res, next) => {
       const mappingDiff = mappingSnapshotDiff(runA.mappingsSnapshot, runB.mappingsSnapshot);
       const payload = {
         mode: 'run-to-run',
-        a: { runId: runA._id, startedAt: runA.startedAt, matchRate: runA.matchRate, breaks: breaksA.length, totals: runA.totals },
-        b: { runId: runB._id, startedAt: runB.startedAt, matchRate: runB.matchRate, breaks: breaksB.length, totals: runB.totals },
+        a: { runId: runA._id, startedAt: runA.startedAt, matchRate: runA.matchRate, breaks: breaksA.length, anomalies: runA.counts?.anomalies || 0, totals: runA.totals },
+        b: { runId: runB._id, startedAt: runB.startedAt, matchRate: runB.matchRate, breaks: breaksB.length, anomalies: runB.counts?.anomalies || 0, totals: runB.totals },
         deltas: {
           matchRate: round6(runB.matchRate - runA.matchRate),
           breakCount: breaksB.length - breaksA.length,
@@ -407,13 +439,13 @@ async function buildComparison(req, body, workflow) {
   if (mode === 'run-to-run') {
     const [runA, runB] = await Promise.all([ReconciliationRun.findById(a.runId), ReconciliationRun.findById(b.runId)]);
     if (!runA || !runB) throw new Error('One of the runs was not found');
-    const [breaksA, breaksB] = await Promise.all([Break.find({ runId: runA._id }).lean(), Break.find({ runId: runB._id }).lean()]);
+    const [breaksA, breaksB] = await Promise.all([Break.find({ runId: runA._id, ...NOT_ANOMALY }).lean(), Break.find({ runId: runB._id, ...NOT_ANOMALY }).lean()]);
     const keysA = new Set(breaksA.map((x) => x.key));
     const keysB = new Set(breaksB.map((x) => x.key));
     return {
       mode: 'run-to-run',
-      a: { runId: runA._id, startedAt: runA.startedAt, matchRate: runA.matchRate, breaks: breaksA.length },
-      b: { runId: runB._id, startedAt: runB.startedAt, matchRate: runB.matchRate, breaks: breaksB.length },
+      a: { runId: runA._id, startedAt: runA.startedAt, matchRate: runA.matchRate, breaks: breaksA.length, anomalies: runA.counts?.anomalies || 0 },
+      b: { runId: runB._id, startedAt: runB.startedAt, matchRate: runB.matchRate, breaks: breaksB.length, anomalies: runB.counts?.anomalies || 0 },
       deltas: { matchRate: round6(runB.matchRate - runA.matchRate), breakCount: breaksB.length - breaksA.length, newlyAppeared: breaksB.filter((x) => !keysA.has(x.key)).length, resolved: breaksA.filter((x) => !keysB.has(x.key)).length },
       mappingDiff: mappingSnapshotDiff(runA.mappingsSnapshot, runB.mappingsSnapshot),
     };

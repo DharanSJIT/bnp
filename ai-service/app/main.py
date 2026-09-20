@@ -64,7 +64,9 @@ class ReconcileRequest(BaseModel):
     runId: str
     period: str = ""
     tolerance: float | None = None
-    maxAnomalies: int = 60
+    # None → the detector derives a per-source anomaly allowance from the
+    # data (~1% of rows per source); an explicit value overrides it.
+    maxAnomalies: int | None = None
 
 
 class RootCauseRequest(BaseModel):

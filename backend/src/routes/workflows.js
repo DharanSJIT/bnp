@@ -35,7 +35,13 @@ router.get('/', async (req, res, next) => {
     const workflows = await Workflow.find({ createdBy: req.user._id }).sort({ updatedAt: -1 }).lean();
     const ids = workflows.map((w) => w._id);
     const breakCounts = await Break.aggregate([
-      { $match: { workflowId: { $in: ids }, status: { $in: ['open', 'investigating', 'pending-approval'] } } },
+      {
+        $match: {
+          workflowId: { $in: ids },
+          type: { $ne: 'anomaly' }, // AI anomaly flags are advisory, not breaks
+          status: { $in: ['open', 'investigating', 'pending-approval'] },
+        },
+      },
       { $group: { _id: '$workflowId', openBreaks: { $sum: 1 } } },
     ]);
     const countMap = Object.fromEntries(breakCounts.map((b) => [b._id.toString(), b.openBreaks]));
@@ -218,6 +224,11 @@ router.post('/:id/run', async (req, res, next) => {
         try {
           const to = [String(workflow.outboundConfig.email).trim().toLowerCase()].filter(Boolean);
           if (to.length) {
+            const counts = run.counts || {};
+            const extras = [];
+            if (counts.anomalies) extras.push(`${counts.anomalies} AI anomaly flag(s) (advisory)`);
+            if (counts.coverageGaps) extras.push(`${counts.coverageGaps} join-map coverage gap(s) (${counts.unmappedRows || 0} unmapped rows)`);
+            const advisory = extras.length ? ` · ${extras.join(' · ')}` : '';
             await deliverReportByEmail({
               req,
               run,
@@ -225,7 +236,7 @@ router.post('/:id/run', async (req, res, next) => {
               to,
               format: workflow.outboundConfig.filePdf ? 'pdf' : 'xlsx',
               subject: `OneRecon Break Report — ${workflow.name}`,
-              message: `Reconciliation for "${workflow.name}" completed with a ${(run.matchRate * 100).toFixed(2)}% match rate and ${run.counts?.breaks || 0} break(s). The final report is attached.\n\nThis is an automated notification from OneRecon.`,
+              message: `Reconciliation for "${workflow.name}" completed with a ${(run.matchRate * 100).toFixed(2)}% match rate and ${counts.breaks || 0} break(s).${advisory} The final report is attached.\n\nThis is an automated notification from OneRecon.`,
             });
           }
         } catch (err) {

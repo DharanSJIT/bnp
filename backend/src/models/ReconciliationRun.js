@@ -7,12 +7,9 @@ const runSchema = new mongoose.Schema(
     status: { type: String, enum: ['running', 'success', 'failed'], default: 'running' },
     startedAt: { type: Date, default: Date.now },
     completedAt: { type: Date, default: null },
-    counts: {
-      bySource: { type: mongoose.Schema.Types.Mixed, default: {} },
-      matched: { type: Number, default: 0 },
-      breaks: { type: Number, default: 0 },
-      anomalies: { type: Number, default: 0 },
-    },
+    // Fully dynamic — the engine derives counts, so new advisory metrics
+    // (coverageGaps, unmappedRows, …) are preserved verbatim.
+    counts: { type: mongoose.Schema.Types.Mixed, default: {} },
     matchRate: { type: Number, default: 0 },
     totals: { type: mongoose.Schema.Types.Mixed, default: { bySource: {} } },
     mappingsSnapshot: { type: mongoose.Schema.Types.Mixed, default: null },

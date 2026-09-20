@@ -15,7 +15,7 @@ const STATUS_TONE = {
   approved: 'match',
   rejected: 'brk',
 };
-const TYPE_TONE = { transactional: 'accent', dimensional: 'potential' };
+const TYPE_TONE = { transactional: 'accent', dimensional: 'potential', anomaly: 'reconcile' };
 const PAGE_SIZE = 25;
 
 function statusName(s) {
@@ -202,6 +202,7 @@ export default function Breaks() {
           <option value="">All types</option>
           <option value="transactional">Transactional</option>
           <option value="dimensional">Dimensional</option>
+          <option value="anomaly">Anomaly (AI flags)</option>
         </select>
         <select className="input !w-auto !py-1.5 text-small" value={filters.status} onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value, page: 1 }))}>
           <option value="">All statuses</option>

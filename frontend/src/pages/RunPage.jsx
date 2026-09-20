@@ -251,8 +251,10 @@ export default function RunPage() {
               {[
                 { label: 'Matched', value: counts.matched, tone: 'text-ledger-match' },
                 { label: 'Breaks', value: counts.breaks, tone: 'text-ledger-brk' },
-                { label: 'Anomalies', value: counts.anomalies, tone: 'text-ledger-reconcile' },
+                { label: 'Anomaly flags', value: counts.anomalies, tone: 'text-ledger-reconcile' },
                 { label: 'Open breaks', value: counts.openBreaks ?? counts.breaks, tone: 'text-ledger-ink' },
+                { label: 'Coverage gaps', value: counts.coverageGaps > 0 ? counts.coverageGaps : undefined, tone: 'text-ledger-ink' },
+                { label: 'Unmapped rows', value: counts.unmappedRows > 0 ? counts.unmappedRows : undefined, tone: 'text-ledger-ink' },
                 { label: 'Total records', value: totals.records ?? totals.matched, tone: 'text-ledger-ink' },
                 { label: 'Total amount', value: totals.amount != null ? fmtAmount(totals.amount) : null, tone: 'text-ledger-ink' },
               ].filter((k) => k.value !== undefined && k.value !== null).map((k) => (

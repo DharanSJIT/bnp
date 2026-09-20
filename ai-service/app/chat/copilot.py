@@ -31,6 +31,17 @@ def _break_stats(workflow_id, run_id):
     return by_type
 
 
+def _genuine_break_count(workflow_id, run_id):
+    """Data breaks only — AI anomaly flags and join-map coverage notes
+    ((unmapped)) are advisory and never counted as breaks."""
+    return db.coll("breaks").count_documents({
+        "workflowId": ObjectId(workflow_id),
+        "runId": ObjectId(run_id),
+        "type": {"$ne": "anomaly"},
+        "key": {"$ne": "(unmapped)"},
+    })
+
+
 def _dimension_compare(workflow_id, run_id, dim="gl_account_id", top=5):
     """Top accounts by |variance| among dimensional breaks of a run."""
     docs = db.coll("breaks").find(
@@ -86,7 +97,8 @@ def answer(workflow_id, question, break_id=None):
         return {"answer": answer_txt, "evidence": evidence}
 
     if any(k in q for k in ("why", "break", "difference", "mismatch", "not match", "variance", "reconcil")):
-        cnt = sum(by_type.values())
+        genuine = _genuine_break_count(workflow_id, run_id)
+        anomaly_flags = by_type.get("anomaly", 0)
         dims = _dimension_compare(workflow_id, run_id)
         dim_txt = ""
         if dims:
@@ -108,11 +120,12 @@ def answer(workflow_id, question, break_id=None):
             evidence.append({"entity": "dimensional-break", **meta_acc})
             return {"answer": answer_txt, "evidence": evidence}
         answer_txt = (
-            f"Period {period}: {cnt} breaks across the {len(wf.get('sources', []))} sources "
-            f"({by_type.get('transactional', 0)} transactional, {by_type.get('dimensional', 0)} dimensional, "
-            f"{by_type.get('anomalies', 0)} anomaly flags). Match rate {round((run.get('matchRate') or 0) * 100, 2)}%.{dim_txt}"
+            f"Period {period}: {genuine} data break(s) across the {len(wf.get('sources', []))} sources "
+            f"({by_type.get('transactional', 0)} transactional, {by_type.get('dimensional', 0)} dimensional) "
+            f"and {anomaly_flags} AI anomaly flag(s){' (statistical outliers; advisory, not counted as breaks)' if anomaly_flags else ' (none — the data matches perfectly or no outliers were flagged)'}. "
+            f"Match rate {round((run.get('matchRate') or 0) * 100, 2)}%.{dim_txt}"
         )
-        evidence.append({"entity": "break-summary", "byType": by_type, "matchRate": run.get("matchRate"), "topDimensional": dims})
+        evidence.append({"entity": "break-summary", "byType": by_type, "matchRate": run.get("matchRate"), "genuineBreaks": genuine, "anomalyFlags": anomaly_flags, "topDimensional": dims})
         return {"answer": answer_txt, "evidence": evidence}
 
     if any(k in q for k in ("match rate", "matched", "reconciled", "health", "status")):
@@ -138,7 +151,8 @@ def answer(workflow_id, question, break_id=None):
     answer_txt = (
         f"I can answer grounded questions about this workflow's period-{period} data: totals/sums per source, "
         f"break counts and why they occurred, top problem accounts, and match-rate status. "
-        f"Currently: {by_type.get('transactional', 0)} transactional and {by_type.get('dimensional', 0)} dimensional breaks."
+        f"Currently: {by_type.get('transactional', 0)} transactional and {by_type.get('dimensional', 0)} dimensional breaks, "
+        f"{by_type.get('anomaly', 0)} AI anomaly flag(s) (advisory)."
     )
     evidence.append({"entity": "capability", "period": period, "byType": by_type})
     return {"answer": answer_txt, "evidence": evidence}
